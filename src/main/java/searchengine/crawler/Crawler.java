@@ -35,6 +35,8 @@ public class Crawler {
 
         while (frontier.size() > 0 && visited.size() < maxLinks) {
             String current = frontier.removeFirst();
+            if (visited.contains(current)) continue;
+
             visited.add(current);
 
             PageParser pageParser = new PageParser(current);

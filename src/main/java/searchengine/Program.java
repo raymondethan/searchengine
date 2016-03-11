@@ -7,7 +7,7 @@ import searchengine.crawler.Crawler;
  */
 public class Program {
     public static void main(String[] args) {
-        Crawler crawler = new Crawler("https://cse.ust.hk/", 10);
+        Crawler crawler = new Crawler("http://www.cse.ust.hk/", 10);
 
         crawler.begin();
     }
