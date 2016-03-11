@@ -7,8 +7,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.Vector;
-
-import javafx.scene.paint.Stop;
 import org.htmlparser.util.ParserException;
 import searchengine.indexer.InvertedIndex;
 
@@ -19,8 +17,8 @@ public class Crawler {
     private int maxLinks;
 
     private InvertedIndex index;
-    private Set<String> visited = new HashSet<String>();
-    private LinkedList<String> frontier = new LinkedList<String>();
+    private Set<String> visited = new HashSet<>();
+    private LinkedList<String> frontier = new LinkedList<>();
     private StopStem stopStem = new StopStem("stopwords.txt");
 
     public Crawler(String startingUrl, int maxLinks) {

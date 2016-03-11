@@ -55,35 +55,5 @@ public class PageParser
 	    }
 		return links;
 	}
-	
-	public static void main (String[] args)
-	{
-		try
-		{
-			PageParser crawler = new PageParser("http://www.cs.ust.hk/~dlee/4321/");
-
-
-			Vector<String> words = crawler.extractWords();		
-			
-			System.out.println("Words in "+crawler.url+":");
-			for(int i = 0; i < words.size(); i++)
-				System.out.print(words.get(i)+" ");
-			System.out.println("\n\n");
-			
-
-	
-			Vector<String> links = crawler.extractLinks();
-			System.out.println("Links in "+crawler.url+":");
-			for(int i = 0; i < links.size(); i++)		
-				System.out.println(links.get(i));
-			System.out.println("");
-			
-		}
-		catch (ParserException e)
-            	{
-                	e.printStackTrace ();
-            	}
-
-	}
 }
 	
