@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.Vector;
+
+import javafx.scene.paint.Stop;
 import org.htmlparser.util.ParserException;
 import searchengine.indexer.InvertedIndex;
 
@@ -17,6 +19,7 @@ public class Crawler {
     private InvertedIndex index;
     private Set<String> visited = new HashSet<String>();
     private LinkedList<String> frontier = new LinkedList<String>();
+    private StopStem stopStem = new StopStem("stopwords.txt");
 
     public Crawler(String startingUrl, int maxLinks) {
         this.maxLinks = maxLinks;
@@ -59,7 +62,10 @@ public class Crawler {
             }
 
             for (int i = 0; i < words.size(); ++i) {
-                index.addEntry(words.get(i), visited.size(), i);
+                if (!stopStem.isStopWord(words.get(i))) {
+                    index.addEntry(stopStem.stem(words.get(i)), visited.size(), i);
+                }
+
             }
 
             System.out.println(current);
