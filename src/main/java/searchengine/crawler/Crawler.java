@@ -66,5 +66,6 @@ public class Crawler {
         }
 
         index.printAll();
+        index.finalize();
     }
 }
