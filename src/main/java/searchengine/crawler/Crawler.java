@@ -22,7 +22,7 @@ public class Crawler {
         this.maxLinks = maxLinks;
 
         try {
-            index = new InvertedIndex("inverted_index.db", "ht1");
+            index = new InvertedIndex("inverted_index", "ht1");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -65,7 +65,6 @@ public class Crawler {
             System.out.println(current);
         }
 
-        //TODO for each word save in db
         index.printAll();
     }
 }
