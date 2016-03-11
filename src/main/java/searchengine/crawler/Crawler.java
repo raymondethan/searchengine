@@ -30,7 +30,7 @@ public class Crawler {
         frontier.addLast(startingUrl);
     }
 
-    public void begin() {
+    public void begin() throws IOException {
         System.out.println("Beginning...");
 
         while (frontier.size() > 0 && visited.size() < maxLinks) {
@@ -58,8 +58,14 @@ public class Crawler {
                 e.printStackTrace();
             }
 
-            //TODO for each word save in db
-            System.out.println("Crawled page: " + current);
+            for (int i = 0; i < words.size(); ++i) {
+                index.addEntry(words.get(i), visited.size(), i);
+            }
+
+            System.out.println(current);
         }
+
+        //TODO for each word save in db
+        index.printAll();
     }
 }
