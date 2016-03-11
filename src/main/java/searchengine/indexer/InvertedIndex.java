@@ -1,4 +1,4 @@
-/* --
+package searchengine.indexer;/* --
 COMP336 Lab1 Exercise
 Student Name:
 Student ID:
@@ -11,8 +11,6 @@ import jdbm.RecordManagerFactory;
 import jdbm.htree.HTree;
 import jdbm.helper.FastIterator;
 
-import java.util.ArrayList;
-import java.util.Vector;
 import java.io.IOException;
 import java.io.Serializable;
 
