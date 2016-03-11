@@ -8,5 +8,12 @@
     <artifactId>searchengine</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <dependencies>
+        <dependency>
+            <groupId>jdbm</groupId>
+            <artifactId>jdbm</artifactId>
+            <version>1.0</version>
+        </dependency>
+    </dependencies>
 
 </project>
