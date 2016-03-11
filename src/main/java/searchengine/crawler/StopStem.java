@@ -22,7 +22,7 @@ public class StopStem
         stopWords = new java.util.HashSet();
 
         try {
-            Stream<String> lines = Files.lines(new File("C:\\Users\\jayha_000\\OneDrive\\Documents\\University\\2016\\COMP 4321\\Labs\\src\\main\\resources\\stopwords.txt").toPath());
+            Stream<String> lines = Files.lines(new File(str).toPath());
             lines.forEach(stopWords::add);
         } catch (IOException e) {
             e.printStackTrace();
