@@ -6,6 +6,7 @@ Section:
 Email:
 */
 
+import java.io.PrintStream;
 import jdbm.RecordManager;
 import jdbm.RecordManagerFactory;
 import jdbm.htree.HTree;
@@ -70,7 +71,7 @@ public class InvertedIndex
 	
 	}
 
-	public void printAll() throws IOException
+	public void printAll(PrintStream stream) throws IOException
 	{
 		// Print all the data in the hashtable
 		FastIterator iter = hashtable.keys();
@@ -79,8 +80,12 @@ public class InvertedIndex
         while( (key = (String)iter.next())!=null)
         {
                 // get and print the content of each key
-                System.out.println(key + " : " + hashtable.get(key));
+                stream.println(key + " : " + hashtable.get(key));
         }
 	
 	}
+
+    public void printAll() throws IOException {
+        printAll(System.out);
+    }
 }

@@ -1,6 +1,8 @@
 package searchengine.crawler;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
@@ -65,7 +67,8 @@ public class Crawler {
             System.out.println(current);
         }
 
-        index.printAll();
+        PrintStream stream = new PrintStream(new FileOutputStream("output.txt"));
+        index.printAll(stream);
         index.finalize();
     }
 }
