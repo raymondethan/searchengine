@@ -1,95 +1,48 @@
-/* --
-COMP4321 Lab2 Exercise
-Student Name:
-Student ID:
-Section:
-Email:
-*/
 package searchengine.crawler;
+
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Set;
 import java.util.Vector;
-import org.htmlparser.beans.StringBean;
-import org.htmlparser.Node;
-import org.htmlparser.NodeFilter;
-import org.htmlparser.Parser;
-import org.htmlparser.filters.AndFilter;
-import org.htmlparser.filters.NodeClassFilter;
-import org.htmlparser.tags.LinkTag;
-import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
-import java.util.StringTokenizer;
-import org.htmlparser.beans.LinkBean;
-import java.net.URL;
 
+/**
+ *
+ */
+public class Crawler {
+    private Set<String> visited = new HashSet<String>();
+    private LinkedList<String> frontier = new LinkedList<String>();
 
-public class Crawler
-{
-	private String url;
-	Crawler(String _url)
-	{
-		url = _url;
-	}
-	public Vector<String> extractWords() throws ParserException
+    public Crawler(String startingUrl) {
+        frontier.addLast(startingUrl);
+    }
 
-	{
-		// extract words in url and return them
-		// use StringTokenizer to tokenize the result from StringBean
-		StringBean sb;
+    public void begin() {
+        String current;
+        while ((current = frontier.removeFirst()) != null) {
+            visited.add(current);
 
-        sb = new StringBean ();
-        sb.setLinks (true);
-        sb.setURL (url);
-        
-        StringTokenizer st = new StringTokenizer(sb.getStrings());
-        Vector<String> vec = new Vector<String>();
-        while (st.hasMoreTokens()) {
-        	vec.addElement(st.nextToken());
+            PageParser pageParser = new PageParser(current);
+
+            Vector<String> words = null;
+            try {
+                words = pageParser.extractWords();
+            } catch (ParserException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                //Add all the links to the frontier that we haven't seen already
+                pageParser
+                        .extractLinks()
+                        .stream()
+                        .filter(visited::contains)
+                        .forEach(frontier::addLast);
+            } catch (ParserException e) {
+                e.printStackTrace();
+            }
+
+            //TODO for each word save in db
         }
-
-        return (vec);
-			
-	}
-	public Vector<String> extractLinks() throws ParserException
-
-	{
-		// extract links in url and return them
-		LinkBean lb = new LinkBean();
-		lb.setURL(url);
-		Vector<String> links = new Vector<String>();
-		URL[] URL_array = lb.getLinks();
-	    for(int i=0; i<URL_array.length; i++){
-	    	links.addElement(URL_array[i].toString());
-	    }
-		return links;
-	}
-	
-	public static void main (String[] args)
-	{
-		try
-		{
-			Crawler crawler = new Crawler("http://www.cs.ust.hk/~dlee/4321/");
-
-
-			Vector<String> words = crawler.extractWords();		
-			
-			System.out.println("Words in "+crawler.url+":");
-			for(int i = 0; i < words.size(); i++)
-				System.out.print(words.get(i)+" ");
-			System.out.println("\n\n");
-			
-
-	
-			Vector<String> links = crawler.extractLinks();
-			System.out.println("Links in "+crawler.url+":");
-			for(int i = 0; i < links.size(); i++)		
-				System.out.println(links.get(i));
-			System.out.println("");
-			
-		}
-		catch (ParserException e)
-            	{
-                	e.printStackTrace ();
-            	}
-
-	}
+    }
 }
-	
