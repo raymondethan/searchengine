@@ -22,6 +22,7 @@ public class PageParser
 	{
 		url = _url;
 	}
+
 	public Vector<String> extractWords() throws ParserException
 
 	{
@@ -30,7 +31,7 @@ public class PageParser
 		StringBean sb;
 
         sb = new StringBean ();
-        sb.setLinks (true);
+        sb.setLinks (false);
         sb.setURL (url);
         
         StringTokenizer st = new StringTokenizer(sb.getStrings());
