@@ -1,25 +1,40 @@
 package searchengine.crawler;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.Vector;
 import org.htmlparser.util.ParserException;
+import searchengine.indexer.InvertedIndex;
 
 /**
  *
  */
 public class Crawler {
+    private int maxLinks;
+
+    private InvertedIndex index;
     private Set<String> visited = new HashSet<String>();
     private LinkedList<String> frontier = new LinkedList<String>();
 
-    public Crawler(String startingUrl) {
+    public Crawler(String startingUrl, int maxLinks) {
+        this.maxLinks = maxLinks;
+
+        try {
+            index = new InvertedIndex("inverted_index.db", "ht1");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         frontier.addLast(startingUrl);
     }
 
     public void begin() {
-        String current;
-        while ((current = frontier.removeFirst()) != null) {
+        System.out.println("Beginning...");
+
+        while (frontier.size() > 0 && visited.size() < maxLinks) {
+            String current = frontier.removeFirst();
             visited.add(current);
 
             PageParser pageParser = new PageParser(current);
@@ -36,13 +51,13 @@ public class Crawler {
                 pageParser
                         .extractLinks()
                         .stream()
-                        .filter(visited::contains)
                         .forEach(frontier::addLast);
             } catch (ParserException e) {
                 e.printStackTrace();
             }
 
             //TODO for each word save in db
+            System.out.println("Crawled page: " + current);
         }
     }
 }
