@@ -73,6 +73,7 @@ public class Crawler {
 
         PrintStream stream = new PrintStream(new FileOutputStream("output.txt"));
         index.printAll(stream);
+        index.printAll();
         index.finalize();
     }
 }

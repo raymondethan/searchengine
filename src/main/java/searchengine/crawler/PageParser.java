@@ -10,8 +10,14 @@ package searchengine.crawler;
 import java.net.URL;
 import java.util.StringTokenizer;
 import java.util.Vector;
+
+import org.htmlparser.Node;
+import org.htmlparser.NodeFilter;
+import org.htmlparser.Parser;
 import org.htmlparser.beans.LinkBean;
 import org.htmlparser.beans.StringBean;
+import org.htmlparser.tags.TitleTag;
+import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
 
 
@@ -56,5 +62,23 @@ public class PageParser
 	    }
 		return links;
 	}
+
+    public String extractTitle() throws ParserException {
+        Parser parser = new Parser();
+        parser.setResource(url);
+        NodeFilter nf = new NodeFilter() {
+            @Override
+            public boolean accept(Node node) {
+                return node instanceof TitleTag;
+            }
+        };
+        NodeList list = parser.parse(nf);
+        Node title = list.elementAt(0);
+        if (title != null) {
+            return title.toString();
+        }
+        return "No title";
+    }
+
 }
 	

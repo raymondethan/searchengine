@@ -12,6 +12,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javafx.geometry.Pos;
 import jdbm.RecordManager;
 import jdbm.RecordManagerFactory;
 import jdbm.helper.FastIterator;
@@ -19,10 +21,10 @@ import jdbm.htree.HTree;
 
 class Posting implements Serializable
 {
-	public String doc;
+	public int doc;
 	public int freq;
 
-	Posting(String doc, int freq)
+	Posting(int doc, int freq)
 	{
 		this.doc = doc;
 		this.freq = freq;
@@ -70,14 +72,28 @@ public class InvertedIndex
         int docId = linkIndex.getId(link);
 
 		// Add a "docX Y" entry for the key "word" into hashtable
-        Posting entry = new Posting("doc" + docId, y);
 
 		List<Posting> entries = (List<Posting>) hashtable.get(wordId);
 		if (entries == null) {
+			Posting entry = new Posting(docId, 1);
 			entries = new ArrayList<>();
+			entries.add(entry);
+		} else {
+			boolean docFound = false;
+			for (int i = 0; i < entries.size(); ++i) {
+				Posting element = entries.get(i);
+				if (element.doc == docId) {
+					element.freq += 1;
+					docFound = true;
+					break;
+				}
+			}
+			if (!docFound) {
+				Posting entry = new Posting(docId, 1);
+				entries.add(entry);
+			}
 		}
 
-        entries.add(entry);
 		hashtable.put(wordId, entries);
 		
 	}
@@ -100,7 +116,7 @@ public class InvertedIndex
 
             // get and print the content of each key
             List<Posting> entries = (List<Posting>) hashtable.get(key);
-            String entriesString = entries.stream().map(p -> (p.doc + " " + p.freq)).collect(Collectors.joining(" "));
+            String entriesString = entries.stream().map(p -> ("doc" + p.doc + " " + p.freq)).collect(Collectors.joining(" "));
             stream.println(word + " : " + entriesString);
         }
     }
