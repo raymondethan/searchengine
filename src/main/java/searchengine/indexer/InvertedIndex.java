@@ -32,22 +32,16 @@ class Posting implements Serializable
 public class InvertedIndex
 {
     private static final String INVERTED_INDEX_NAME = "ht1";
-    private static final String WORD_MAP_NAME = "wordmap";
-    private static final String WORD_ID_MAP_NAME = "wordidmap";
-
-    //We need to use something for an index that's a word, so we don't ever overwrite it..
-    private static final int HIGHEST_WORD_NAME = -1;
-    private int highestWord = 0;
 
 	private RecordManager recman;
 
 	private HTree hashtable;
-    private HTree wordMap;
-    private HTree wordIdMap;
+    private WordIndex wordIndex;
 
 	public InvertedIndex(String recordmanager) throws IOException
 	{
 		recman = RecordManagerFactory.createRecordManager(recordmanager);
+        wordIndex = new WordIndex(recman);
 
         //Create our inverted index
 		long recid = recman.getNamedObject(INVERTED_INDEX_NAME);
@@ -58,24 +52,6 @@ public class InvertedIndex
 			hashtable = HTree.createInstance(recman);
 			recman.setNamedObject(INVERTED_INDEX_NAME, hashtable.getRecid() );
 		}
-
-        recid = recman.getNamedObject(WORD_MAP_NAME);
-        if (recid != 0) {
-            wordMap = HTree.load(recman, recid);
-            highestWord = (int)wordMap.get(HIGHEST_WORD_NAME);
-        } else {
-            wordMap = HTree.createInstance(recman);
-            recman.setNamedObject(WORD_MAP_NAME, wordMap.getRecid());
-            wordMap.put(HIGHEST_WORD_NAME, 0);
-        }
-
-        recid = recman.getNamedObject(WORD_ID_MAP_NAME);
-        if (recid != 0) {
-            wordIdMap = HTree.load(recman, recid);
-        } else {
-            wordIdMap = HTree.createInstance(recman);
-            recman.setNamedObject(WORD_ID_MAP_NAME, wordIdMap.getRecid());
-        }
 	}
 
 
@@ -87,16 +63,7 @@ public class InvertedIndex
 
 	public void addEntry(String word, int x, int y) throws IOException
 	{
-        Integer wordId = (Integer)wordMap.get(word);
-        if (wordId == null) {
-            wordId = highestWord;
-
-            //Make sure we update the highest word id
-            highestWord++;
-            wordMap.put(HIGHEST_WORD_NAME, highestWord);
-            wordIdMap.put(wordId, word);
-            wordMap.put(word, wordId);
-        }
+        int wordId = wordIndex.getWordId(word);
 
 		// Add a "docX Y" entry for the key "word" into hashtable
         Posting entry = new Posting("doc" + x, y);
@@ -125,7 +92,7 @@ public class InvertedIndex
         Integer key;
         while ((key = (Integer) iter.next()) != null) {
             //Get the word that corresponds to this id
-            String word = (String) wordIdMap.get(key);
+            String word = wordIndex.getWord(key);
 
             // get and print the content of each key
             List<Posting> entries = (List<Posting>) hashtable.get(key);
