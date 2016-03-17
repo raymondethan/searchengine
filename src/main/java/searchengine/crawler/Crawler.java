@@ -25,7 +25,7 @@ public class Crawler {
         this.maxLinks = maxLinks;
 
         try {
-            index = new InvertedIndex("inverted_index", "ht1");
+            index = new InvertedIndex("inverted_index");
         } catch (IOException e) {
             e.printStackTrace();
         }

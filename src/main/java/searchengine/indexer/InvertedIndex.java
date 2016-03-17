@@ -31,13 +31,15 @@ class Posting implements Serializable
 
 public class InvertedIndex
 {
+    private static final String INVERTED_INDEX_NAME = "ht1";
+
 	private RecordManager recman;
 	private HTree hashtable;
 
-	public InvertedIndex(String recordmanager, String objectname) throws IOException
+	public InvertedIndex(String recordmanager) throws IOException
 	{
 		recman = RecordManagerFactory.createRecordManager(recordmanager);
-		long recid = recman.getNamedObject(objectname);
+		long recid = recman.getNamedObject(INVERTED_INDEX_NAME);
 			
 		if (recid != 0)
 			hashtable = HTree.load(recman, recid);
