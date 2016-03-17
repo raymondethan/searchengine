@@ -36,12 +36,15 @@ public class InvertedIndex
 	private RecordManager recman;
 
 	private HTree hashtable;
+
     private WordIndex wordIndex;
+    private LinkIndex linkIndex;
 
 	public InvertedIndex(String recordmanager) throws IOException
 	{
 		recman = RecordManagerFactory.createRecordManager(recordmanager);
         wordIndex = new WordIndex(recman);
+        linkIndex = new LinkIndex(recman);
 
         //Create our inverted index
 		long recid = recman.getNamedObject(INVERTED_INDEX_NAME);
@@ -61,12 +64,13 @@ public class InvertedIndex
 		recman.close();				
 	} 
 
-	public void addEntry(String word, int x, int y) throws IOException
+	public void addEntry(String word, String link, int y) throws IOException
 	{
-        int wordId = wordIndex.getWordId(word);
+        int wordId = wordIndex.getId(word);
+        int docId = linkIndex.getId(link);
 
 		// Add a "docX Y" entry for the key "word" into hashtable
-        Posting entry = new Posting("doc" + x, y);
+        Posting entry = new Posting("doc" + docId, y);
 
 		List<Posting> entries = (List<Posting>) hashtable.get(wordId);
 		if (entries == null) {
@@ -92,7 +96,7 @@ public class InvertedIndex
         Integer key;
         while ((key = (Integer) iter.next()) != null) {
             //Get the word that corresponds to this id
-            String word = wordIndex.getWord(key);
+            String word = wordIndex.get(key);
 
             // get and print the content of each key
             List<Posting> entries = (List<Posting>) hashtable.get(key);
