@@ -87,7 +87,7 @@ public class InvertedIndex
         {
                 // get and print the content of each key
                 List<Posting> entries = (List<Posting>) hashtable.get(key);
-                String entriesString = entries.stream().map(p -> (p.doc + p.freq)).collect(Collectors.joining(" "));
+                String entriesString = entries.stream().map(p -> (p.doc + " " + p.freq)).collect(Collectors.joining(" "));
                 stream.println(key + " : " + entriesString);
         }
 	
