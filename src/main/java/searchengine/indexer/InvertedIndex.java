@@ -15,17 +15,6 @@ import jdbm.helper.FastIterator;
 import java.io.IOException;
 import java.io.Serializable;
 
-class Posting implements Serializable
-{
-	public String doc;
-	public int freq;
-	Posting(String doc, int freq)
-	{
-		this.doc = doc;
-		this.freq = freq;
-	}
-}
-
 public class InvertedIndex
 {
 	private RecordManager recman;
