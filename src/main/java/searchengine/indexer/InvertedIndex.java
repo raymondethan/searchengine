@@ -6,14 +6,28 @@ Section:
 Email:
 */
 
+import java.io.IOException;
 import java.io.PrintStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import jdbm.RecordManager;
 import jdbm.RecordManagerFactory;
-import jdbm.htree.HTree;
 import jdbm.helper.FastIterator;
+import jdbm.htree.HTree;
 
-import java.io.IOException;
-import java.io.Serializable;
+class Posting implements Serializable
+{
+	public String doc;
+	public int freq;
+
+	Posting(String doc, int freq)
+	{
+		this.doc = doc;
+		this.freq = freq;
+	}
+}
 
 public class InvertedIndex
 {
@@ -44,12 +58,15 @@ public class InvertedIndex
 	public void addEntry(String word, int x, int y) throws IOException
 	{
 		// Add a "docX Y" entry for the key "word" into hashtable
-		String newEntry = "doc" + Integer.toString(x) + " " + Integer.toString(y);
-		Object oldEntry = hashtable.get(word);
-		if (oldEntry != null) {
-			newEntry = (String) oldEntry + " " + newEntry;
+        Posting entry = new Posting("doc" + x, y);
+
+		List<Posting> entries = (List<Posting>) hashtable.get(word);
+		if (entries == null) {
+			entries = new ArrayList<>();
 		}
-		hashtable.put(word, newEntry);
+
+        entries.add(entry);
+		hashtable.put(word, entries);
 		
 	}
 
@@ -69,7 +86,9 @@ public class InvertedIndex
         while( (key = (String)iter.next())!=null)
         {
                 // get and print the content of each key
-                stream.println(key + " : " + hashtable.get(key));
+                List<Posting> entries = (List<Posting>) hashtable.get(key);
+                String entriesString = entries.stream().map(p -> (p.doc + p.freq)).collect(Collectors.joining(" "));
+                stream.println(key + " : " + entriesString);
         }
 	
 	}
