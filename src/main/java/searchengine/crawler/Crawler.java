@@ -63,7 +63,7 @@ public class Crawler {
 
             for (int i = 0; i < words.size(); ++i) {
                 if (!stopStem.isStopWord(words.get(i))) {
-                    index.addEntry(stopStem.stem(words.get(i)), visited.size(), i);
+                    index.addEntry(stopStem.stem(words.get(i)), current, i);
                 }
 
             }
