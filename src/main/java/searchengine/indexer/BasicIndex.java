@@ -2,6 +2,7 @@ package searchengine.indexer;
 
 import java.io.IOException;
 import jdbm.RecordManager;
+import jdbm.helper.FastIterator;
 import jdbm.htree.HTree;
 
 /**
@@ -62,5 +63,9 @@ public class BasicIndex<T> {
 
     public T get(int id) throws IOException {
         return (T) inverseMap.get(id);
+    }
+
+    public FastIterator getIds() throws IOException {
+        return inverseMap.keys();
     }
 }

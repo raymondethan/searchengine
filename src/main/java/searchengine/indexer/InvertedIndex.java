@@ -11,9 +11,8 @@ import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
-
-import javafx.geometry.Pos;
 import jdbm.RecordManager;
 import jdbm.RecordManagerFactory;
 import jdbm.helper.FastIterator;
@@ -41,12 +40,14 @@ public class InvertedIndex
 
     private WordIndex wordIndex;
     private LinkIndex linkIndex;
+	private DocumentWordCounts wordCountIndex;
 
 	public InvertedIndex(String recordmanager) throws IOException
 	{
 		recman = RecordManagerFactory.createRecordManager(recordmanager);
         wordIndex = new WordIndex(recman);
         linkIndex = new LinkIndex(recman);
+		wordCountIndex = new DocumentWordCounts(recman);
 
         //Create our inverted index
 		long recid = recman.getNamedObject(INVERTED_INDEX_NAME);
@@ -70,6 +71,9 @@ public class InvertedIndex
 	{
         int wordId = wordIndex.getId(word);
         int docId = linkIndex.getId(link);
+
+		//We add the word not the word id because we only ever use this printing.
+		wordCountIndex.addWord(docId, word);
 
 		// Add a "docX Y" entry for the key "word" into hashtable
 
@@ -100,6 +104,8 @@ public class InvertedIndex
 
 	public void delEntry(String word) throws IOException
 	{
+		//TODO remove from documents that have the word count?
+
 		// Delete the word and its list from the hashtable
 		hashtable.remove(word);
 	
@@ -107,18 +113,47 @@ public class InvertedIndex
 
 	public void printAll(PrintStream stream) throws IOException {
         // Print all the data in the hashtable
-        FastIterator iter = hashtable.keys();
+        FastIterator iter = linkIndex.getIds();
 
         Integer key;
         while ((key = (Integer) iter.next()) != null) {
-            //Get the word that corresponds to this id
-            String word = wordIndex.get(key);
+			//Don't do anything for the value that keeps track of the auto increment index
+			if (key == -1) continue;
+			/**
+			 * The format of output as specified on the project. Args are:
+			 * Page title
+			 * Page url
+			 * Last modified data, Page size
+			 * Keyword1 freq1; ...; KeywordM fredM
+			 * Child Link 1
+			 * .
+			 * .
+			 * .
+			 * Child Link n
+			 * -------------------------------------------------------------------------------------------
+			 */
+			String outputFormatter = "%s\n%s\n%s, %s\n%s\n%s\n-------------------------------------------------------------------------------------------";
 
-            // get and print the content of each key
-            List<Posting> entries = (List<Posting>) hashtable.get(key);
-            String entriesString = entries.stream().map(p -> ("doc" + p.doc + " " + p.freq)).collect(Collectors.joining(" "));
-            stream.println(word + " : " + entriesString);
-        }
+			String url = linkIndex.get(key);
+			String title = "unknown"; //TODO load from somewhere
+			String lastModified = "01/01/0001"; //TODO load from somewhere
+			String size = "0"; //TODO load from somewhere
+
+			Map<String, Integer> wordCountsMap = wordCountIndex.get(key);
+			String wordCounts = wordCountsMap
+					.keySet()
+					.stream()
+					.map(word -> word + " " + wordCountsMap.get(word))
+					.collect(Collectors.joining("; "));
+
+			List<String> linksList = linkIndex.getChildren(url);
+			String links = linksList
+					.stream()
+					.collect(Collectors.joining("\n"));
+
+			String result = String.format(outputFormatter, url, title, lastModified, size, wordCounts, links);
+			stream.println(result);
+		}
     }
 
     public void printAll() throws IOException {
