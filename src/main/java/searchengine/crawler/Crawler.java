@@ -72,9 +72,13 @@ public class Crawler {
 
             for (int i = 0; i < words.size(); ++i) {
                 if (!stopStem.isStopWord(words.get(i))) {
-                    index.addEntry(stopStem.stem(words.get(i)), current, i);
-                }
+                    String stemmed = stopStem.stem(words.get(i));
 
+                    //Stop getting those empty entries
+                    if (stemmed.isEmpty()) continue;
+
+                    index.addEntry(stemmed, current, i);
+                }
             }
 
             System.out.println(current);
