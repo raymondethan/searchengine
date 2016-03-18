@@ -1,8 +1,6 @@
 package searchengine.crawler;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
@@ -46,9 +44,11 @@ public class Crawler {
 
             Vector<String> words = null;
             try {
+                //Get the words from the page
                 words = pageParser.extractWords();
             } catch (ParserException e) {
                 e.printStackTrace();
+                continue;
             }
 
             try {
@@ -68,6 +68,7 @@ public class Crawler {
 
             } catch (ParserException e) {
                 e.printStackTrace();
+                continue;
             }
 
             for (int i = 0; i < words.size(); ++i) {
@@ -84,9 +85,6 @@ public class Crawler {
             System.out.println(current);
         }
 
-        PrintStream stream = new PrintStream(new FileOutputStream("output.txt"));
-        index.printAll(stream);
-        index.printAll();
         index.finalize();
     }
 }
