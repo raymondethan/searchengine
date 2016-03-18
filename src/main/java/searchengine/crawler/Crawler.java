@@ -41,6 +41,8 @@ public class Crawler {
             visited.add(current);
 
             PageParser pageParser = new PageParser(current);
+            String lastModified = pageParser.lastModified;
+            String size = pageParser.size;
 
             Vector<String> words = null;
             try {
@@ -49,6 +51,12 @@ public class Crawler {
             } catch (ParserException e) {
                 e.printStackTrace();
                 continue;
+            }
+            String title = "No Title";
+            try {
+                title = pageParser.extractTitle();
+            } catch (ParserException e) {
+                e.printStackTrace();
             }
 
             try {

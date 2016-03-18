@@ -125,47 +125,47 @@ public class InvertedIndex
 
         Integer key;
         while ((key = (Integer) iter.next()) != null) {
-			//Don't do anything for the value that keeps track of the auto increment index
-			if (key == -1) continue;
-			/**
-			 * The format of output as specified on the project. Args are:
-			 * Page title
-			 * Page url
-			 * Last modified data, Page size
-			 * Keyword1 freq1; ...; KeywordM fredM
-			 * Child Link 1
-			 * .
-			 * .
-			 * .
-			 * Child Link n
-			 * -------------------------------------------------------------------------------------------
-			 */
-			String outputFormatter = "%s\n%s\n%s, %s\n%s\n%s\n-------------------------------------------------------------------------------------------";
+            //Don't do anything for the value that keeps track of the auto increment index
+            if (key == -1) continue;
+            /**
+             * The format of output as specified on the project. Args are:
+             * Page title
+             * Page url
+             * Last modified data, Page size
+             * Keyword1 freq1; ...; KeywordM fredM
+             * Child Link 1
+             * .
+             * .
+             * .
+             * Child Link n
+             * -------------------------------------------------------------------------------------------
+             */
+            String outputFormatter = "%s\n%s\n%s, %s\n%s\n%s\n-------------------------------------------------------------------------------------------";
 
-			String url = linkIndex.get(key);
-			String title = "unknown"; //TODO load from somewhere
-			String lastModified = "01/01/0001"; //TODO load from somewhere
-			String size = "0"; //TODO load from somewhere
+            String url = linkIndex.get(key);
+            String title = "unknown"; //TODO load from somewhere
+            String lastModified = "01/01/0001"; //TODO load from somewhere
+            String size = "0"; //TODO load from somewhere
 
-			Map<String, Integer> wordCountsMap = wordCountIndex.getWordCounts(key);
+            Map<String, Integer> wordCountsMap = wordCountIndex.getWordCounts(key);
 
             //Possible for links we haven't scraped but have assigned an id to
             if (wordCountsMap == null) continue;
 
-			String wordCounts = wordCountsMap
-					.keySet()
-					.stream()
-					.map(word -> word + " " + wordCountsMap.get(word))
-					.collect(Collectors.joining("; "));
+            String wordCounts = wordCountsMap
+                    .keySet()
+                    .stream()
+                    .map(word -> word + " " + wordCountsMap.get(word))
+                    .collect(Collectors.joining("; "));
 
-			List<String> linksList = linkIndex.getChildren(url);
-			String links = linksList
-					.stream()
-					.collect(Collectors.joining("\n"));
+            List<String> linksList = linkIndex.getChildren(url);
+            String links = linksList
+                    .stream()
+                    .collect(Collectors.joining("\n"));
 
-			String result = String.format(outputFormatter, title, url, lastModified, size, wordCounts, links);
-			stream.println(result);
-		}
+            String result = String.format(outputFormatter, title, url, lastModified, size, wordCounts, links);
+            stream.println(result);
+        }
     }
 
     public void printAll() throws IOException {
