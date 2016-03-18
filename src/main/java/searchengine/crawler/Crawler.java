@@ -53,10 +53,19 @@ public class Crawler {
 
             try {
                 //Add all the links to the frontier that we haven't seen already
-                pageParser
-                        .extractLinks()
-                        .stream()
-                        .forEach(frontier::addLast);
+                Vector<String> links = pageParser.extractLinks();
+
+                //Save the child links
+                index.addChildLinks(current, links);
+
+                for (String link : links) {
+                    //Add the links to the frontier
+                    frontier.addLast(link);
+
+                    //Remember the parent for this link
+                    index.addParentLink(link, current);
+                }
+
             } catch (ParserException e) {
                 e.printStackTrace();
             }

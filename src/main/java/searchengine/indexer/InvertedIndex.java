@@ -65,7 +65,15 @@ public class InvertedIndex
 	{
 		recman.commit();
 		recman.close();				
-	} 
+	}
+
+    public void addChildLinks(String link, List<String> children) throws IOException {
+        linkIndex.addChildren(link, children);
+    }
+
+    public void addParentLink(String link, String parent) throws IOException {
+        linkIndex.addParent(link, parent);
+    }
 
 	public void addEntry(String word, String link, int y) throws IOException
 	{
@@ -140,6 +148,10 @@ public class InvertedIndex
 			String size = "0"; //TODO load from somewhere
 
 			Map<String, Integer> wordCountsMap = wordCountIndex.getWordCounts(key);
+
+            //Possible for links we haven't scraped but have assigned an id to
+            if (wordCountsMap == null) continue;
+
 			String wordCounts = wordCountsMap
 					.keySet()
 					.stream()
