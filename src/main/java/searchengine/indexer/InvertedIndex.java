@@ -139,7 +139,7 @@ public class InvertedIndex
 			String lastModified = "01/01/0001"; //TODO load from somewhere
 			String size = "0"; //TODO load from somewhere
 
-			Map<String, Integer> wordCountsMap = wordCountIndex.get(key);
+			Map<String, Integer> wordCountsMap = wordCountIndex.getWordCounts(key);
 			String wordCounts = wordCountsMap
 					.keySet()
 					.stream()
@@ -151,7 +151,7 @@ public class InvertedIndex
 					.stream()
 					.collect(Collectors.joining("\n"));
 
-			String result = String.format(outputFormatter, url, title, lastModified, size, wordCounts, links);
+			String result = String.format(outputFormatter, title, url, lastModified, size, wordCounts, links);
 			stream.println(result);
 		}
     }

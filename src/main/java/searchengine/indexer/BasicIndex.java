@@ -3,7 +3,6 @@ package searchengine.indexer;
 import java.io.IOException;
 import jdbm.RecordManager;
 import jdbm.helper.FastIterator;
-import jdbm.htree.HTree;
 
 /**
  *
@@ -11,61 +10,48 @@ import jdbm.htree.HTree;
 public class BasicIndex<T> {
     //We need to use something for an index that's a word, so we don't ever overwrite it..
     private static final int HIGHEST_ID_NAME = -1;
-    private RecordManager recman;
 
-    private String recordName;
-    private String inverseRecordName;
+    private BasicPersistentMap<Integer, T> map;
+    private BasicPersistentMap<Object, Integer> inverseMap;
 
     //The id we've reached
-    private int highestIndex = 0;
+    private Integer highestIndex;
 
-    private HTree map;
-    private HTree inverseMap;
+    private String tableName;
+    private String inverseTableName;
 
-    public BasicIndex(String recordName, RecordManager recman) throws IOException {
-        this.recman = recman;
-        this.recordName = recordName;
-        this.inverseRecordName = recordName + "_inverse";
+    public BasicIndex(String tableName, RecordManager recordManager) throws IOException {
+        this.tableName = tableName;
+        this.inverseTableName = tableName + "_inverse";
 
-        long recid = recman.getNamedObject(recordName);
-        if (recid != 0) {
-            map = HTree.load(recman, recid);
-            highestIndex = (int) map.get(HIGHEST_ID_NAME);
-        } else {
-            map = HTree.createInstance(recman);
-            recman.setNamedObject(recordName, map.getRecid());
-            map.put(HIGHEST_ID_NAME, 0);
-        }
+        map = new BasicPersistentMap<>(this.tableName, recordManager);
+        inverseMap = new BasicPersistentMap<>(inverseTableName, recordManager);
 
-        recid = recman.getNamedObject(inverseRecordName);
-        if (recid != 0) {
-            inverseMap = HTree.load(recman, recid);
-        } else {
-            inverseMap = HTree.createInstance(recman);
-            recman.setNamedObject(inverseRecordName, inverseMap.getRecid());
+        highestIndex = inverseMap.get(HIGHEST_ID_NAME);
+        if (highestIndex == null) {
+            inverseMap.put(HIGHEST_ID_NAME, 0);
+            highestIndex = 0;
         }
     }
 
     public int getId(T item) throws IOException {
-        Integer wordId = (Integer) map.get(item);
-        if (wordId == null) {
-            wordId = highestIndex;
+        Integer id = inverseMap.get(item);
+        if (id == null) {
+            id = highestIndex;
 
-            //Make sure we update the highest word id
+            inverseMap.put(item, highestIndex);
+            map.put(highestIndex, item);
             highestIndex++;
-            map.put(HIGHEST_ID_NAME, highestIndex);
-            inverseMap.put(wordId, item);
-            map.put(item, wordId);
         }
 
-        return wordId;
+        return id;
     }
 
     public T get(int id) throws IOException {
-        return (T) inverseMap.get(id);
+        return (T) map.get(id);
     }
 
     public FastIterator getIds() throws IOException {
-        return inverseMap.keys();
+        return map.getIds();
     }
 }
