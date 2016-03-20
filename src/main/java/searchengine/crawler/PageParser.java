@@ -60,6 +60,7 @@ public class PageParser
             e.printStackTrace();
             responseHeader = new String[0];
         }
+        System.out.println(responseHeader);
         this.lastModified = null;
         extractResponseInfo();
     };

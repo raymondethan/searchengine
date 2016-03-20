@@ -17,6 +17,7 @@ import jdbm.RecordManager;
 import jdbm.RecordManagerFactory;
 import jdbm.helper.FastIterator;
 import jdbm.htree.HTree;
+import searchengine.crawler.WebPage;
 
 class Posting implements Serializable
 {
@@ -33,6 +34,7 @@ class Posting implements Serializable
 public class InvertedIndex
 {
     private static final String INVERTED_INDEX_NAME = "ht1";
+	private static final String DOCIDINDEX_NAME = "docIdIndex";
 
 	private RecordManager recman;
 
@@ -41,12 +43,14 @@ public class InvertedIndex
     private WordIndex wordIndex;
     private LinkIndex linkIndex;
 	private DocumentWordCounts wordCountIndex;
+	private BasicPersistentMap docIdIndex;
 
 	public InvertedIndex(String recordmanager) throws IOException
 	{
 		recman = RecordManagerFactory.createRecordManager(recordmanager);
         wordIndex = new WordIndex(recman);
         linkIndex = new LinkIndex(recman);
+		docIdIndex = new BasicPersistentMap<>(DOCIDINDEX_NAME,recman);
 		wordCountIndex = new DocumentWordCounts(recman);
 
         //Create our inverted index
@@ -107,6 +111,8 @@ public class InvertedIndex
 		}
 
 		hashtable.put(wordId, entries);
+
+		//Add docId to docIdIndex if it
 		
 	}
 
@@ -117,6 +123,19 @@ public class InvertedIndex
 		// Delete the word and its list from the hashtable
 		hashtable.remove(word);
 	
+	}
+
+	//Get the docId of a given link so we can pass it into insertIntoDocInex
+	public int getDocId(String link) throws IOException {
+		return linkIndex.getId(link);
+	}
+
+	//Insert a doc into the docIndex, we use this when printing out information
+	public void insertIntoDocIndex(int docId, String url, String lastModified, String size, String title) throws IOException {
+		if (null == docIdIndex.get(docId)) {
+			WebPage page = new WebPage(docId, url, lastModified, size, title);
+			docIdIndex.put(docId, page);
+		}
 	}
 
 	public void printAll(PrintStream stream) throws IOException {
@@ -142,10 +161,17 @@ public class InvertedIndex
              */
             String outputFormatter = "%s\n%s\n%s, %s\n%s\n%s\n-------------------------------------------------------------------------------------------";
 
-            String url = linkIndex.get(key);
-            String title = "unknown"; //TODO load from somewhere
-            String lastModified = "01/01/0001"; //TODO load from somewhere
-            String size = "0"; //TODO load from somewhere
+			//Assumes get returns a valid webpage
+            WebPage currPage = (WebPage) docIdIndex.get(key);
+
+			//Added this due to a null pointer exception. I think we add links to the link index,
+			//But don't index them all because of our maxLink limit on pages we index.
+			if (null == currPage) continue;
+
+			String url = linkIndex.get(key);
+            String title = currPage.title;
+            String lastModified = currPage.lastModified;
+            String size = currPage.size;
 
             Map<String, Integer> wordCountsMap = wordCountIndex.getWordCounts(key);
 

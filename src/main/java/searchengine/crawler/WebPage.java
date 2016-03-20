@@ -3,9 +3,9 @@ package searchengine.crawler;
 /**
  * Created by ethanraymond on 3/18/16.
  */
-public class WebPage {
+public class WebPage implements java.io.Serializable {
 
-    public int docId;
+    public Integer docId;
     public String url;
     public String lastModified;
     public String size;
@@ -21,7 +21,7 @@ public class WebPage {
 
     @Override
     public int hashCode() {
-        return url.hashCode();
+        return docId.hashCode();
     }
 
 }

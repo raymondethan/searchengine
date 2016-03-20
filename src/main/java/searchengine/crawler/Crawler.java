@@ -59,6 +59,14 @@ public class Crawler {
                 e.printStackTrace();
             }
 
+            System.out.println(lastModified);
+
+            //Add the page to the docIndex
+            //The method checks for duplicate links so we don't have to here
+            int currDocId = index.getDocId(current);
+            //System.out.println("Inserting doc id: " + currDocId);
+            index.insertIntoDocIndex(currDocId, current, lastModified, size, title);
+
             try {
                 //Add all the links to the frontier that we haven't seen already
                 Vector<String> links = pageParser.extractLinks();
