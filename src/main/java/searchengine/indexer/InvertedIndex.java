@@ -9,9 +9,7 @@ Email:
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import jdbm.RecordManager;
 import jdbm.RecordManagerFactory;
@@ -131,11 +129,13 @@ public class InvertedIndex
 	}
 
 	//Insert a doc into the docIndex, we use this when printing out information
-	public void insertIntoDocIndex(int docId, String url, String lastModified, String size, String title) throws IOException {
-		if (null == docIdIndex.get(docId)) {
-			WebPage page = new WebPage(docId, url, lastModified, size, title);
-			docIdIndex.put(docId, page);
-		}
+	public void insertIntoDocIndex(int docId, String url, Date lastModified, String size, String title) throws IOException {
+		WebPage page = new WebPage(docId, url, lastModified, size, title);
+		docIdIndex.put(docId, page);
+	}
+
+	public WebPage getWebPage(int docId) throws IOException {
+		return (WebPage) docIdIndex.get(docId);
 	}
 
 	public void printAll(PrintStream stream) throws IOException {
@@ -170,7 +170,7 @@ public class InvertedIndex
 
 			String url = linkIndex.get(key);
             String title = currPage.title;
-            String lastModified = currPage.lastModified;
+            String lastModified = currPage.lastModified.toString();
             String size = currPage.size;
 
             Map<String, Integer> wordCountsMap = wordCountIndex.getWordCounts(key);
@@ -178,18 +178,37 @@ public class InvertedIndex
             //Possible for links we haven't scraped but have assigned an id to
             if (wordCountsMap == null) continue;
 
+            //We are supposed to print out the top 5 most frequent terms
+            //There's probably a better way in Java to do this, feel free to change if my code is bad
+            //Work in progress
+//            Collection<Integer> values= wordCountsMap.values();
+//            ArrayList<Integer> list= new ArrayList<Integer>(values);
+//            Collections.sort(list);
+//            String wordCounts = "";
+//            for (int i = 0; i < Math.min(5, list.size()); ++i) {
+//                wordCounts += list.get(i) + ";";
+//            }
+
             String wordCounts = wordCountsMap
                     .keySet()
                     .stream()
                     .map(word -> word + " " + wordCountsMap.get(word))
                     .collect(Collectors.joining("; "));
 
-            List<String> linksList = linkIndex.getChildren(url);
-            String links = linksList
+            //We are supposed to print parent links and then child links
+            List<String> parentLinksList = linkIndex.getParents(url);
+            String parentLinks = parentLinksList
                     .stream()
                     .collect(Collectors.joining("\n"));
 
-            String result = String.format(outputFormatter, title, url, lastModified, size, wordCounts, links);
+            String delimeter = "--------------------------";
+
+            List<String> childLinksList = linkIndex.getChildren(url);
+            String childLinks = childLinksList
+                    .stream()
+                    .collect(Collectors.joining("\n"));
+
+            String result = String.format(outputFormatter, title, url, lastModified, size, wordCounts, parentLinks, delimeter, childLinks);
             stream.println(result);
         }
     }

@@ -3,6 +3,8 @@ package searchengine;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.text.ParseException;
+
 import searchengine.crawler.Crawler;
 import searchengine.indexer.InvertedIndex;
 
@@ -11,11 +13,13 @@ import searchengine.indexer.InvertedIndex;
  */
 public class Program {
     public static void main(String[] args) throws IOException {
-        Crawler crawler = new Crawler("http://www.cse.ust.hk/", 1);
+        Crawler crawler = new Crawler("http://www.cse.ust.hk/", 30);
 
         try {
             crawler.begin();
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
             e.printStackTrace();
         }
 

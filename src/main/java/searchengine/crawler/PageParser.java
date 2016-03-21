@@ -11,10 +11,10 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.Vector;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import org.htmlparser.Node;
 import org.htmlparser.NodeFilter;
@@ -35,17 +35,16 @@ public class PageParser
 {
 	private String url;
     private Parser parser = new Parser();
-    HttpURLConnection connection;
-    String[] responseHeader;
-    public String lastModified;
+    private HttpURLConnection connection;
+    private String[] responseHeader;
+    public Date lastModified;
     public String size = "No content length";
 
     private final String LAST_MODIFIED = "Last-Modified";
     private final String DATE = "Date";
     private final String CONTENT_LENGTH = "Content-Length";
 
-	PageParser(String _url)
-	{
+	PageParser(String _url) throws ParseException {
         this.url = _url;
         try {
             parser.setResource(url);
@@ -55,8 +54,6 @@ public class PageParser
         ConnectionManager manager = Parser.getConnectionManager ();
         connection = (HttpURLConnection) parser.getConnection();
         try {
-            //System.out.println(connection.getResponseMessage());
-            //System.out.println(HttpHeader.getResponseHeader(connection));
             responseHeader = HttpHeader.getResponseHeader(connection).split("\n");
         } catch (Exception e) {
             e.printStackTrace();
@@ -100,17 +97,17 @@ public class PageParser
 		return links;
 	}
 
-    private void extractResponseInfo() {
-        String date = "No Date";
+    private void extractResponseInfo() throws ParseException {
+        DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy kk:mm:ss zzz");
+        Date date = null;
         for (int i = 0; i < responseHeader.length; ++i) {
             String[] element = responseHeader[i].split(": ");
             switch (element[0]) {
                 case DATE:
-                    date = element[1];
+                    date = format.parse(element[1]);
                     break;
                 case LAST_MODIFIED:
-                    this.lastModified = element[1];
-                    System.out.println("Last modified!");
+                    this.lastModified = format.parse(element[1]);
                     break;
                 case CONTENT_LENGTH:
                     this.size = element[1];

@@ -37,4 +37,8 @@ public class BasicPersistentMap<T, K> {
     public FastIterator getIds() throws IOException {
         return map.keys();
     }
+
+    public void remove(T index) throws IOException {
+        map.remove(index);
+    }
 }
