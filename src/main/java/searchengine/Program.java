@@ -11,7 +11,7 @@ import searchengine.indexer.InvertedIndex;
  */
 public class Program {
     public static void main(String[] args) throws IOException {
-        Crawler crawler = new Crawler("http://www.cse.ust.hk/", 10);
+        Crawler crawler = new Crawler("http://www.cse.ust.hk/", 1);
 
         try {
             crawler.begin();

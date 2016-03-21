@@ -59,8 +59,6 @@ public class Crawler {
                 e.printStackTrace();
             }
 
-            System.out.println(lastModified);
-
             //Add the page to the docIndex
             //The method checks for duplicate links so we don't have to here
             int currDocId = index.getDocId(current);

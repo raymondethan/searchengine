@@ -55,12 +55,13 @@ public class PageParser
         ConnectionManager manager = Parser.getConnectionManager ();
         connection = (HttpURLConnection) parser.getConnection();
         try {
-            responseHeader = connection.getResponseMessage().split("\n");
-        } catch (IOException e) {
+            //System.out.println(connection.getResponseMessage());
+            //System.out.println(HttpHeader.getResponseHeader(connection));
+            responseHeader = HttpHeader.getResponseHeader(connection).split("\n");
+        } catch (Exception e) {
             e.printStackTrace();
             responseHeader = new String[0];
         }
-        System.out.println(responseHeader);
         this.lastModified = null;
         extractResponseInfo();
     };
@@ -106,10 +107,14 @@ public class PageParser
             switch (element[0]) {
                 case DATE:
                     date = element[1];
+                    break;
                 case LAST_MODIFIED:
                     this.lastModified = element[1];
+                    System.out.println("Last modified!");
+                    break;
                 case CONTENT_LENGTH:
                     this.size = element[1];
+                    break;
                 default:
                     break;
             }
