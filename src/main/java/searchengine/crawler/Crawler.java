@@ -35,15 +35,20 @@ public class Crawler {
     public void begin() throws IOException, ParseException {
         System.out.println("Beginning...");
 
+        //Store the last modified section of the response as a Date so we can easily make date comparisons
         DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy kk:mm:ss zzz");
 
         while (frontier.size() > 0 && visited.size() < maxLinks) {
             String current = frontier.removeFirst();
             if (visited.contains(current)) continue;
 
+            Long startTime = System.currentTimeMillis();
+
             PageParser pageParser = new PageParser(current);
             Date lastModified = pageParser.lastModified;
             String size = pageParser.size;
+
+            System.out.println("Parser initialization time: " + (System.currentTimeMillis() - startTime) );
 
             Integer currDocId = index.getDocId(current);
             WebPage pageInIndex = index.getWebPage(currDocId);
@@ -59,19 +64,24 @@ public class Crawler {
             System.out.println(visited.size());
             visited.add(current);
 
+            String title = "No Title";
+            try {
+                Long titlestart = System.currentTimeMillis();
+                title = pageParser.extractTitle();
+                System.out.println("Extract title time: " + (System.currentTimeMillis() - titlestart));
+            } catch (ParserException e) {
+                e.printStackTrace();
+            }
+
             Vector<String> words = null;
             try {
                 //Get the words from the page
+                Long sbstart = System.currentTimeMillis();
                 words = pageParser.extractWords();
+                System.out.println("String Bean time: " + (System.currentTimeMillis() - sbstart) );
             } catch (ParserException e) {
                 e.printStackTrace();
                 continue;
-            }
-            String title = "No Title";
-            try {
-                title = pageParser.extractTitle();
-            } catch (ParserException e) {
-                e.printStackTrace();
             }
 
             //Add the page to the docIndex
@@ -79,7 +89,10 @@ public class Crawler {
 
             try {
                 //Add all the links to the frontier that we haven't seen already
+                Long linkstart = System.currentTimeMillis();
                 Vector<String> links = pageParser.extractLinks();
+
+                System.out.println("Extract Links time: " + (System.currentTimeMillis() - linkstart) );
 
                 //Save the child links
                 index.addChildLinks(current, links);
@@ -108,6 +121,7 @@ public class Crawler {
                 }
             }
 
+            System.out.println("Total execution time: " + (System.currentTimeMillis() - startTime) );
             System.out.println(current);
         }
 

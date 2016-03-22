@@ -19,6 +19,7 @@ import java.util.*;
 import org.htmlparser.Node;
 import org.htmlparser.NodeFilter;
 import org.htmlparser.Parser;
+import org.htmlparser.beans.HTMLLinkBean;
 import org.htmlparser.beans.LinkBean;
 import org.htmlparser.beans.StringBean;
 import org.htmlparser.http.ConnectionManager;
@@ -68,12 +69,10 @@ public class PageParser
 	{
 		// extract words in url and return them
 		// use StringTokenizer to tokenize the result from StringBean
-		StringBean sb;
-
-        sb = new StringBean ();
+        parser.reset();
+        StringBean sb = new StringBean ();
         sb.setLinks (false);
-        sb.setURL (url);
-
+        parser.visitAllNodesWith(sb);
         StringTokenizer st = new StringTokenizer(sb.getStrings());
         Vector<String> vec = new Vector<String>();
         while (st.hasMoreTokens()) {
@@ -88,9 +87,12 @@ public class PageParser
 	{
 		// extract links in url and return them
 		LinkBean lb = new LinkBean();
-		lb.setURL(url);
+        //System.out.println(connection);
+		//lb.setConnection(connection);
+        lb.setURL(url);
 		Vector<String> links = new Vector<String>();
 		URL[] URL_array = lb.getLinks();
+        //System.out.println(lb.getConnection());
 	    for(int i=0; i<URL_array.length; i++){
 	    	links.addElement(URL_array[i].toString());
 	    }
