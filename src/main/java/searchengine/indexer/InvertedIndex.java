@@ -33,6 +33,7 @@ public class InvertedIndex
 {
     private static final String INVERTED_INDEX_NAME = "ht1";
 	private static final String DOCIDINDEX_NAME = "docIdIndex";
+    private static final int MAX_TERMS_PRINTED = 5;
 
 	private RecordManager recman;
 
@@ -178,30 +179,36 @@ public class InvertedIndex
             //Possible for links we haven't scraped but have assigned an id to
             if (wordCountsMap == null) continue;
 
-            //We are supposed to print out the top 5 most frequent terms
-            //There's probably a better way in Java to do this, feel free to change if my code is bad
-            //Work in progress
-//            Collection<Integer> values= wordCountsMap.values();
-//            ArrayList<Integer> list= new ArrayList<Integer>(values);
-//            Collections.sort(list);
-//            String wordCounts = "";
-//            for (int i = 0; i < Math.min(5, list.size()); ++i) {
-//                wordCounts += list.get(i) + ";";
-//            }
+            //Print out the top 5 most frequent terms
+            String wordCounts = "";
+			Set<Map.Entry<String, Integer>> set = wordCountsMap.entrySet();
+			List<Map.Entry<String, Integer>> list = new ArrayList<Map.Entry<String, Integer>>(
+					set);
+			Collections.sort(list, new Comparator<Map.Entry<String, Integer>>() {
+				@Override
+				public int compare(Map.Entry<String, Integer> o1,
+								   Map.Entry<String, Integer> o2) {
 
-            String wordCounts = wordCountsMap
-                    .keySet()
-                    .stream()
-                    .map(word -> word + " " + wordCountsMap.get(word))
-                    .collect(Collectors.joining("; "));
+					return o2.getValue().compareTo(o1.getValue());
+				}
+			});
+            for (int i = 0; i < Math.min(MAX_TERMS_PRINTED, list.size()); ++i) {
+                wordCounts += list.get(i).toString().replace("="," ") + "; ";
+            }
 
-            //We are supposed to print parent links and then child links
+//            String wordCounts = wordCountsMap
+//                    .keySet()
+//                    .stream()
+//                    .map(word -> word + " " + wordCountsMap.get(word))
+//                    .collect(Collectors.joining("; "));
+
+            //Print parent links and then child links
             List<String> parentLinksList = linkIndex.getParents(url);
             String parentLinks = parentLinksList
                     .stream()
                     .collect(Collectors.joining("\n"));
 
-            String delimeter = "--------------------------";
+            String delimeter = "..............";
 
             List<String> childLinksList = linkIndex.getChildren(url);
             String childLinks = childLinksList
