@@ -21,9 +21,11 @@ class Posting implements Serializable
 {
 	public int doc;
 	public int freq;
+    public ArrayList<Integer> positions;
 
 	Posting(int doc, int freq)
 	{
+        positions = new ArrayList<>();
 		this.doc = doc;
 		this.freq = freq;
 	}
@@ -50,19 +52,22 @@ public class InvertedIndex
 	}
 
 
-	public void addEntry(int wordId, int docId) throws IOException
+	public void addEntry(int wordId, int docId, int pos) throws IOException
 	{
 		// Add a "docX Y" entry for the key "word" into hashtable
 
 		List<Posting> entries = (List<Posting>) hashtable.get(wordId);
 		if (entries == null) {
 			Posting entry = new Posting(docId, 1);
+            entry.positions.add(pos);
+
 			entries = new ArrayList<>();
 			entries.add(entry);
 		} else {
 			boolean docFound = false;
 			for (int i = 0; i < entries.size(); ++i) {
 				Posting element = entries.get(i);
+                element.positions.add(pos);
 				if (element.doc == docId) {
 					element.freq += 1;
 					docFound = true;
@@ -71,6 +76,7 @@ public class InvertedIndex
 			}
 			if (!docFound) {
 				Posting entry = new Posting(docId, 1);
+                entry.positions.add(pos);
 				entries.add(entry);
 			}
 		}

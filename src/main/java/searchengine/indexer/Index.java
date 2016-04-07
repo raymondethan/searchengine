@@ -63,14 +63,14 @@ public class Index {
         wordCountIndex.addWord(docId, word);
 
         //Add the word to the inverted index
-        bodyIndex.addEntry(wordId, docId);
+        bodyIndex.addEntry(wordId, docId, pos);
     }
 
-    public void addTitleEntry(String title, String url) throws IOException {
+    public void addTitleEntry(String title, String url, int pos) throws IOException {
         int docId = linkIndex.getId(url);
         int wordId = wordIndex.getId(title);
 
-        titleIndex.addEntry(wordId,docId);
+        titleIndex.addEntry(wordId,docId, pos);
     }
 
     public void delEntry(String word) throws IOException {
@@ -115,7 +115,7 @@ public class Index {
              * Child Link n
              * -------------------------------------------------------------------------------------------
              */
-            String outputFormatter = "%s\n%s\n%s, %s\n%s\n%s\n%s\n%s\n-------------------------------------------------------------------------------------------";
+            String outputFormatter = "%s\n%s\n%s, %s\n%s\n%s\n-------------------------------------------------------------------------------------------";
 
             //Assumes get returns a valid webpage
             WebPage currPage = (WebPage) docIdIndex.get(key);
@@ -151,39 +151,21 @@ public class Index {
                 wordCounts += list.get(i).toString().replace("="," ") + "; ";
             }
 
-//            String wordCounts = wordCountsMap
-//                    .keySet()
-//                    .stream()
-//                    .map(word -> word + " " + wordCountsMap.get(word))
-//                    .collect(Collectors.joining("; "));
-
-
             //Print parent links and then child links
-            List<String> parentLinksList = linkIndex.getParents(url);
-            String parentLinks = parentLinksList
-                    .stream()
-                    .collect(Collectors.joining("\n"));
-
-            String delimeter = "..............";
+//            List<String> parentLinksList = linkIndex.getParents(url);
+//            String parentLinks = parentLinksList
+//                    .stream()
+//                    .collect(Collectors.joining("\n"));
 
             List<String> childLinksList = linkIndex.getChildren(url);
             String childLinks = childLinksList
                     .stream()
                     .collect(Collectors.joining("\n"));
 
-            String result = String.format(outputFormatter, title, url, lastModified, size, wordCounts, parentLinks, delimeter, childLinks);
+            String result = String.format(outputFormatter, title, url, lastModified, size, wordCounts, childLinks);
             stream.println(result);
         }
 
-        FastIterator iterator = titleIndex.getIterator();
-        Integer current;
-        while ((current = (Integer)iterator.next()) != null) {
-            String word = wordIndex.get(current);
-            ArrayList<Posting> postings = titleIndex.getDocuments(current);
-
-            String output = word + ": " + postings.stream().map(p -> p.doc + "").collect(Collectors.joining(", "));
-            System.out.println(output);
-        }
     }
 
     public void printAll() throws IOException {

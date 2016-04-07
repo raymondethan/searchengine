@@ -14,7 +14,7 @@ import searchengine.indexer.InvertedIndex;
  */
 public class Program {
     public static void main(String[] args) throws IOException {
-        Crawler crawler = new Crawler("http://www.cse.ust.hk/", 10);
+        Crawler crawler = new Crawler("http://www.cse.ust.hk/", 30);
 
         try {
             crawler.begin();
@@ -27,7 +27,7 @@ public class Program {
         //Have a look at what we got
         Index index = new Index("inverted_index");
 
-        PrintStream stream = new PrintStream(new FileOutputStream("output.txt"));
+        PrintStream stream = new PrintStream(new FileOutputStream("spider_result.txt"));
         index.printAll(stream);
         index.printAll();
 

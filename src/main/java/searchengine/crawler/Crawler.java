@@ -14,8 +14,6 @@ import searchengine.indexer.InvertedIndex;
  *
  */
 
-//create inverted file for titles
-    //add position to IF
     //count characters if size field null
 public class Crawler {
     private int maxLinks;
@@ -82,7 +80,7 @@ public class Crawler {
                         //Stop getting those empty entries
                         if (stemmed.isEmpty()) continue;
 
-                        index.addTitleEntry(stemmed, current);
+                        index.addTitleEntry(stemmed, current, i);
                     }
                 }
                 System.out.println("Extract title time: " + (System.currentTimeMillis() - titlestart));
