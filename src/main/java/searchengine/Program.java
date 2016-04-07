@@ -6,6 +6,7 @@ import java.io.PrintStream;
 import java.text.ParseException;
 
 import searchengine.crawler.Crawler;
+import searchengine.indexer.Index;
 import searchengine.indexer.InvertedIndex;
 
 /**
@@ -13,7 +14,7 @@ import searchengine.indexer.InvertedIndex;
  */
 public class Program {
     public static void main(String[] args) throws IOException {
-        Crawler crawler = new Crawler("http://www.cse.ust.hk/", 30);
+        Crawler crawler = new Crawler("http://www.cse.ust.hk/", 10);
 
         try {
             crawler.begin();
@@ -24,10 +25,11 @@ public class Program {
         }
 
         //Have a look at what we got
-        InvertedIndex index = new InvertedIndex("inverted_index");
+        Index index = new Index("inverted_index");
 
         PrintStream stream = new PrintStream(new FileOutputStream("output.txt"));
         index.printAll(stream);
         index.printAll();
+
     }
 }

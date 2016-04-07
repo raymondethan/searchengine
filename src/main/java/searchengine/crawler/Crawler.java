@@ -7,15 +7,20 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import org.htmlparser.util.ParserException;
+import searchengine.indexer.Index;
 import searchengine.indexer.InvertedIndex;
 
 /**
  *
  */
+
+//create inverted file for titles
+    //add position to IF
+    //count characters if size field null
 public class Crawler {
     private int maxLinks;
 
-    private InvertedIndex index;
+    private Index index;
     private Set<String> visited = new HashSet<>();
     private LinkedList<String> frontier = new LinkedList<>();
     private StopStem stopStem = new StopStem("stopwords.txt");
@@ -24,7 +29,7 @@ public class Crawler {
         this.maxLinks = maxLinks;
 
         try {
-            index = new InvertedIndex("inverted_index");
+            index = new Index("inverted_index");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -42,6 +47,7 @@ public class Crawler {
             String current = frontier.removeFirst();
             if (visited.contains(current)) continue;
 
+            //GET RID OF THIS
             Long startTime = System.currentTimeMillis();
 
             PageParser pageParser = new PageParser(current);
@@ -68,6 +74,17 @@ public class Crawler {
             try {
                 Long titlestart = System.currentTimeMillis();
                 title = pageParser.extractTitle();
+                String [] titleArray = title.split(" ");
+                for (int i = 0; i < titleArray.length; ++i) {
+                    if (!stopStem.isStopWord(titleArray[i])) {
+                        String stemmed = stopStem.stem(titleArray[i]);
+
+                        //Stop getting those empty entries
+                        if (stemmed.isEmpty()) continue;
+
+                        index.addTitleEntry(stemmed, current);
+                    }
+                }
                 System.out.println("Extract title time: " + (System.currentTimeMillis() - titlestart));
             } catch (ParserException e) {
                 e.printStackTrace();
@@ -78,6 +95,7 @@ public class Crawler {
                 //Get the words from the page
                 Long sbstart = System.currentTimeMillis();
                 words = pageParser.extractWords();
+                System.out.println(words.size());
                 System.out.println("String Bean time: " + (System.currentTimeMillis() - sbstart) );
             } catch (ParserException e) {
                 e.printStackTrace();

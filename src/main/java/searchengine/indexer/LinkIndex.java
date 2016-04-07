@@ -55,7 +55,9 @@ public class LinkIndex extends BasicIndex<String> {
         //We don't store the parent links as a string because we don't gain
         //any advantage searching by doing so and it would add overhead to getting a list
         //of parent links. Maybe in future if we don't want duplicates or something
-        parents.add(parent);
+        if (!parents.contains(parent))
+            parents.add(parent);
+
         parentHashTree.put(linkId, parents);
     }
 
@@ -82,7 +84,10 @@ public class LinkIndex extends BasicIndex<String> {
         if (currentChildren == null)
             currentChildren = new ArrayList<>();
 
-        children.addAll(children);
+        children.stream()
+                .filter(c -> !children.contains(c))
+                .forEach(currentChildren::add);
+
         childHashTree.put(linkId, children);
     }
 

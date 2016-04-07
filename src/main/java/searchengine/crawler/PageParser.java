@@ -39,7 +39,7 @@ public class PageParser
     private HttpURLConnection connection;
     private String[] responseHeader;
     public Date lastModified;
-    public String size = "No content length";
+    public String size = null;
 
     private final String LAST_MODIFIED = "Last-Modified";
     private final String DATE = "Date";
@@ -72,6 +72,7 @@ public class PageParser
         parser.reset();
         StringBean sb = new StringBean ();
         sb.setLinks (false);
+
         parser.visitAllNodesWith(sb);
         StringTokenizer st = new StringTokenizer(sb.getStrings());
         Vector<String> vec = new Vector<String>();
@@ -100,27 +101,12 @@ public class PageParser
 	}
 
     private void extractResponseInfo() throws ParseException {
-        DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy kk:mm:ss zzz");
-        Date date = null;
-        for (int i = 0; i < responseHeader.length; ++i) {
-            String[] element = responseHeader[i].split(": ");
-            switch (element[0]) {
-                case DATE:
-                    date = format.parse(element[1]);
-                    break;
-                case LAST_MODIFIED:
-                    this.lastModified = format.parse(element[1]);
-                    break;
-                case CONTENT_LENGTH:
-                    this.size = element[1];
-                    break;
-                default:
-                    break;
-            }
+        long lm = connection.getLastModified();
+        if (-1 == lm) {
+            lm = connection.getDate();
         }
-        if (null == this.lastModified) {
-            this.lastModified = date;
-        }
+        this.lastModified = new Date(lm);
+        this.size = connection.getContentLength()+"";
     }
 
     public String extractTitle() throws ParserException {
@@ -134,7 +120,7 @@ public class PageParser
         Node title = list.elementAt(0);
 
         if (title != null) {
-            return title.toString();
+            return ((TitleTag)title).getTitle();
         }
         return "No title";
     }

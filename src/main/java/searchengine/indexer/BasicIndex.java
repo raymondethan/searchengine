@@ -39,9 +39,11 @@ public class BasicIndex<T> {
         if (id == null) {
             id = highestIndex;
 
-            inverseMap.put(item, highestIndex);
-            map.put(highestIndex, item);
+            inverseMap.put(item, id);
+            map.put(id, item);
+
             highestIndex++;
+            inverseMap.put(HIGHEST_ID_NAME, highestIndex);
         }
 
         return id;
