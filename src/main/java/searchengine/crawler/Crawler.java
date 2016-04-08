@@ -36,12 +36,14 @@ public class Crawler {
     }
 
     public void begin() throws IOException, ParseException {
-        System.out.println("Beginning...");
+        System.out.print("Crawling");
 
         //Store the last modified section of the response as a Date so we can easily make date comparisons
         DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy kk:mm:ss zzz");
 
         while (frontier.size() > 0 && visited.size() < maxLinks) {
+            //Print to console to indicate crawling of pages
+            System.out.print(".");
             String current = frontier.removeFirst();
             if (visited.contains(current)) continue;
 
@@ -55,7 +57,7 @@ public class Crawler {
             //If the doc exists in our index, and the webpage retrieved does not have a last modified field
             //Or the webpage's last modified field is after the last modification date of the document in the index
             //Then we do not want to add the page to the index and visit its children
-            if (null != currDocId && null != pageInIndex && (null == lastModified || pageInIndex.lastModified.before(lastModified))) continue;
+            if (null != currDocId && null != pageInIndex && (null == lastModified || !pageInIndex.lastModified.after(lastModified))) continue;
             //TODO: We are supposed to ignore urls if we have already visited them and the last modification date has not been updated
             //TODO: This means we do not add any urls to the frontier when we start from a root that has already been indexed - What should we do in this situation
 
@@ -97,10 +99,6 @@ public class Crawler {
                 //Use the character count if default size is not included in the response header
                 if (-1 == size) {
                     size = pageParser.size_default;
-                    System.out.println("size default: "+pageParser.size_default);
-                }
-                else {
-                    System.out.println("size: "+size);
                 }
                 //Add the page to the docIndex
                 index.insertIntoDocIndex(currDocId, current, lastModified, size, title);
@@ -133,6 +131,7 @@ public class Crawler {
                 }
             }
         }
+        System.out.println();
 
         index.finalize();
     }

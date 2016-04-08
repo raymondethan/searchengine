@@ -92,12 +92,10 @@ public class PageParser
 	{
 		// extract links in url and return them
 		LinkBean lb = new LinkBean();
-        //System.out.println(connection);
 		//lb.setConnection(connection);
         lb.setURL(url);
 		Vector<String> links = new Vector<String>();
 		URL[] URL_array = lb.getLinks();
-        //System.out.println(lb.getConnection());
 	    for(int i=0; i<URL_array.length; i++){
 	    	links.addElement(URL_array[i].toString());
             this.size_default += URL_array[i].toString().length();
