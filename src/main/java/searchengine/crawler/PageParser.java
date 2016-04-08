@@ -39,7 +39,9 @@ public class PageParser
     private HttpURLConnection connection;
     private String[] responseHeader;
     public Date lastModified;
-    public String size = null;
+    public Integer size = null;
+    //We use this variable to count the total number of chars on the page if size is not included in the response header
+    public int size_default = 0;
 
     private final String LAST_MODIFIED = "Last-Modified";
     private final String DATE = "Date";
@@ -77,7 +79,9 @@ public class PageParser
         StringTokenizer st = new StringTokenizer(sb.getStrings());
         Vector<String> vec = new Vector<String>();
         while (st.hasMoreTokens()) {
-        	vec.addElement(st.nextToken());
+            String element = st.nextToken();
+        	vec.addElement(element);
+            this.size_default += element.length();
         }
 
         return (vec);
@@ -96,6 +100,7 @@ public class PageParser
         //System.out.println(lb.getConnection());
 	    for(int i=0; i<URL_array.length; i++){
 	    	links.addElement(URL_array[i].toString());
+            this.size_default += URL_array[i].toString().length();
 	    }
 		return links;
 	}
@@ -106,7 +111,7 @@ public class PageParser
             lm = connection.getDate();
         }
         this.lastModified = new Date(lm);
-        this.size = connection.getContentLength()+"";
+        this.size = connection.getContentLength();
     }
 
     public String extractTitle() throws ParserException {

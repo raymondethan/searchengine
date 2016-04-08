@@ -10,13 +10,13 @@ public class WebPage implements java.io.Serializable {
     public Integer docId;
     public String url;
     public Date lastModified;
-    public String size;
+    public Integer size;
     public String title;
 
     //Added this to avoid an InvalidClassException
     // private static final long serialVersionUID = 6529685098267757690L;
 
-    public WebPage(int docId, String url, Date lastModified, String size, String title) {
+    public WebPage(int docId, String url, Date lastModified, Integer size, String title) {
         this.docId = docId;
         this.url = url;
         this.lastModified = lastModified;

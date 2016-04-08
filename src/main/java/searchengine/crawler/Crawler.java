@@ -45,14 +45,9 @@ public class Crawler {
             String current = frontier.removeFirst();
             if (visited.contains(current)) continue;
 
-            //GET RID OF THIS
-            Long startTime = System.currentTimeMillis();
-
             PageParser pageParser = new PageParser(current);
             Date lastModified = pageParser.lastModified;
-            String size = pageParser.size;
-
-            System.out.println("Parser initialization time: " + (System.currentTimeMillis() - startTime) );
+            Integer size = pageParser.size;
 
             Integer currDocId = index.getDocId(current);
             WebPage pageInIndex = index.getWebPage(currDocId);
@@ -64,13 +59,10 @@ public class Crawler {
             //TODO: We are supposed to ignore urls if we have already visited them and the last modification date has not been updated
             //TODO: This means we do not add any urls to the frontier when we start from a root that has already been indexed - What should we do in this situation
 
-            System.out.println("visiting " + current);
-            System.out.println(visited.size());
             visited.add(current);
 
             String title = "No Title";
             try {
-                Long titlestart = System.currentTimeMillis();
                 title = pageParser.extractTitle();
                 String [] titleArray = title.split(" ");
                 for (int i = 0; i < titleArray.length; ++i) {
@@ -83,7 +75,6 @@ public class Crawler {
                         index.addTitleEntry(stemmed, current, i);
                     }
                 }
-                System.out.println("Extract title time: " + (System.currentTimeMillis() - titlestart));
             } catch (ParserException e) {
                 e.printStackTrace();
             }
@@ -91,24 +82,29 @@ public class Crawler {
             Vector<String> words = null;
             try {
                 //Get the words from the page
-                Long sbstart = System.currentTimeMillis();
                 words = pageParser.extractWords();
-                System.out.println(words.size());
-                System.out.println("String Bean time: " + (System.currentTimeMillis() - sbstart) );
             } catch (ParserException e) {
                 e.printStackTrace();
                 continue;
             }
 
-            //Add the page to the docIndex
-            index.insertIntoDocIndex(currDocId, current, lastModified, size, title);
-
             try {
                 //Add all the links to the frontier that we haven't seen already
-                Long linkstart = System.currentTimeMillis();
                 Vector<String> links = pageParser.extractLinks();
+                if (size.equals("-1")) {
 
-                System.out.println("Extract Links time: " + (System.currentTimeMillis() - linkstart) );
+                }
+                //Use the character count if default size is not included in the response header
+                if (-1 == size) {
+                    size = pageParser.size_default;
+                    System.out.println("size default: "+pageParser.size_default);
+                }
+                else {
+                    System.out.println("size: "+size);
+                }
+                //Add the page to the docIndex
+                index.insertIntoDocIndex(currDocId, current, lastModified, size, title);
+
                 //TODO: check that the links are getting stored correctly - there is a page that only 4 child links are getting printed out for, which does not match online
                 //Save the child links
                 index.addChildLinks(current, links);
@@ -136,9 +132,6 @@ public class Crawler {
                     index.addEntry(stemmed, current, i);
                 }
             }
-
-            System.out.println("Total execution time: " + (System.currentTimeMillis() - startTime) );
-            System.out.println(current);
         }
 
         index.finalize();

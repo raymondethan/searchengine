@@ -85,7 +85,7 @@ public class Index {
     }
 
     //Insert a doc into the docIndex, we use this when printing out information
-    public void insertIntoDocIndex(int docId, String url, Date lastModified, String size, String title) throws IOException {
+    public void insertIntoDocIndex(int docId, String url, Date lastModified, Integer size, String title) throws IOException {
         WebPage page = new WebPage(docId, url, lastModified, size, title);
         docIdIndex.put(docId, page);
     }
@@ -127,7 +127,7 @@ public class Index {
             String url = linkIndex.get(key);
             String title = currPage.title;
             String lastModified = currPage.lastModified.toString();
-            String size = currPage.size;
+            Integer size = currPage.size;
 
             Map<String, Integer> wordCountsMap = wordCountIndex.getWordCounts(key);
 
