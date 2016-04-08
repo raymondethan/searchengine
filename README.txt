@@ -8,4 +8,4 @@ Work Distribution
 
 StudentName    |Student ID |Workload
 Jay Harris	    20362789	50%
-Ethan Raymond	            50%
+Ethan Raymond	20363147    50%
