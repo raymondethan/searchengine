@@ -18,7 +18,7 @@ public class Searcher {
         this.index = index;
     }
 
-    public void search(String query) throws IOException {
+    public List<SearchResult> search(String query) throws IOException {
         List<Token> tokens = new Tokenizer(query).getTokens();
         ArrayList<Posting> matched_documents = new ArrayList<Posting>();
         System.out.println(tokens.size());
@@ -70,6 +70,8 @@ public class Searcher {
                 System.out.println(index.getWebPage(p.doc));
             }
         }
+
+        return new ArrayList<>();
     }
 
 //    public ArrayList<HashMap<Integer, Posting>> getAllMatchingPostingsFromIndex(List<Token> tokens, int i, Index index) throws IOException {

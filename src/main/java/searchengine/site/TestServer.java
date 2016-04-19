@@ -13,6 +13,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.bootstrap.HttpServer;
 import org.apache.http.impl.bootstrap.ServerBootstrap;
 import searchengine.indexer.Index;
+import searchengine.searcher.SearchResult;
 import searchengine.searcher.Searcher;
 import searchengine.searcher.Tokenizer;
 
@@ -82,7 +83,8 @@ public class TestServer {
     }
 
     private static List getResults(String query) throws IOException {
-        //searcher.search(query);
+        List<SearchResult> results = searcher.search(query);
+
         Tokenizer tokenizer = new Tokenizer(query);
         return tokenizer.allWords();
     }
