@@ -13,7 +13,8 @@ public class Token {
         return words.size() > 1;
     }
 
-    public List<String> getWords() {
-        return words;
+    public List<Integer> getWords() {
+        return null;
     }
+
 }

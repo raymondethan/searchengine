@@ -1,16 +1,13 @@
 package searchengine.indexer;
 
-import javafx.geometry.Pos;
 import jdbm.RecordManager;
 import jdbm.RecordManagerFactory;
 import jdbm.helper.FastIterator;
-import jdbm.htree.HTree;
 import searchengine.crawler.WebPage;
 
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.*;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
@@ -44,6 +41,10 @@ public class Index {
         linkIndex = new LinkIndex(recman);
         docIdIndex = new BasicPersistentMap<>(DOCIDINDEX_NAME,recman);
         wordCountIndex = new DocumentWordCounts(recman);
+    }
+
+    public ArrayList<Posting> getDoc(int wordId) throws IOException {
+        return bodyIndex.getDocuments(wordId);
     }
 
     public void addChildLinks(String link, List<String> children) throws IOException {

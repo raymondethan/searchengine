@@ -1,5 +1,7 @@
 package searchengine.searcher;
 
+import searchengine.indexer.Index;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +12,7 @@ public class Tokenizer {
     private String query;
     private List<Token> tokens = new ArrayList<>();
 
-    public Tokenizer(String query) {
+    public Tokenizer(String query, Index index) {
         tokenize();
     }
 
