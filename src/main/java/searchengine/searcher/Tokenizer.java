@@ -8,7 +8,7 @@ import searchengine.crawler.StopStem;
 import searchengine.indexer.Index;
 
 /**
- *
+ * Parses tokens from words
  */
 public class Tokenizer {
     private StopStem stopStem = new StopStem("stopwords.txt");
@@ -51,6 +51,7 @@ public class Tokenizer {
             }
         }
 
+        //If we didn't finish a word, add it
         if (currentWord.length() > 0)
         {
             addWord();
@@ -62,6 +63,7 @@ public class Tokenizer {
     private void addWord() throws IOException {
         String word = currentWord.toString();
 
+        //Don't add empty words or stop words
         if (word.isEmpty() || stopStem.isStopWord(word)){
             return;
         }
@@ -92,10 +94,18 @@ public class Tokenizer {
         currentToken = new Token();
     }
 
+    /**
+     * Gets a list of the tokens parsed by the tokenizer
+     * @return The tokens
+     */
     public List<Token> getTokens() {
         return tokens;
     }
 
+    /**
+     * Gets a list of all the words from the query, whether they are phrases or not
+     * @return The words
+     */
     public List<Integer> allWords() {
         return tokens.stream().flatMap(t -> t.getWordIds().stream()).collect(Collectors.toList());
     }

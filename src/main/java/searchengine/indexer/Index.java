@@ -49,8 +49,26 @@ public class Index {
         titleInverseDocumentFrequencies = new InverseDocumentFrequencies(TITLE_IDF_NAME, recman);
     }
 
-    public ArrayList<Posting> getDoc(int wordId) throws IOException {
+    public List<Posting> getDoc(String word) throws IOException {
+        Integer wordId = wordIndex.tryGetId(word);
+        if (wordId == null) return new ArrayList<>();
+
+        return getDoc(wordId);
+    }
+
+    public List<Posting> getDoc(int wordId) throws IOException {
         return bodyIndex.getDocuments(wordId);
+    }
+
+    public List<Posting> getTitleDoc(String word) throws IOException {
+        Integer wordId = wordIndex.tryGetId(word);
+        if (wordId == null) return new ArrayList<>();
+
+        return getDoc(wordId);
+    }
+
+    public List<Posting> getTitleDoc(int wordId) throws IOException {
+        return titleIndex.getDocuments(wordId);
     }
 
     public void addChildLinks(String link, List<String> children) throws IOException {
