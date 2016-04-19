@@ -30,7 +30,7 @@ public class Index {
     private WordIndex wordIndex;
     private LinkIndex linkIndex;
     private DocumentWordCounts wordCountIndex;
-    private BasicPersistentMap docIdIndex;
+    private DocumentIndex docIdIndex;
 
     private RecordManager recman;
 
@@ -43,7 +43,7 @@ public class Index {
 
         wordIndex = new WordIndex(recman);
         linkIndex = new LinkIndex(recman);
-        docIdIndex = new BasicPersistentMap<>(DOCIDINDEX_NAME,recman);
+        docIdIndex = new DocumentIndex(DOCIDINDEX_NAME,recman);
         wordCountIndex = new DocumentWordCounts(recman);
         bodyInverseDocumentFrequencies = new InverseDocumentFrequencies(BODY_IDF_NAME, recman);
         titleInverseDocumentFrequencies = new InverseDocumentFrequencies(TITLE_IDF_NAME, recman);
@@ -101,6 +101,30 @@ public class Index {
     public void insertIntoDocIndex(int docId, String url, Date lastModified, Integer size, String title) throws IOException {
         WebPage page = new WebPage(docId, url, lastModified, size, title);
         docIdIndex.put(docId, page);
+    }
+
+    public double idf(String word) throws IOException {
+        Integer id = wordIndex.tryGetId(word);
+        return idf(id);
+    }
+
+    public double idf(Integer wordId) throws IOException {
+        int contain = bodyInverseDocumentFrequencies.containingDocuments(wordId);
+        if (contain == 0) return 0;
+
+        return Math.log(docIdIndex.getDocumentCount()/contain);
+    }
+
+    public double titleIdf(String word) throws IOException {
+        Integer id = wordIndex.tryGetId(word);
+        return idf(id);
+    }
+
+    public double titleIdf(Integer wordId) throws IOException {
+        int contain = titleInverseDocumentFrequencies.containingDocuments(wordId);
+        if (contain == 0) return 0;
+
+        return Math.log(docIdIndex.getDocumentCount()/contain);
     }
 
     public WebPage getWebPage(int docId) throws IOException {
