@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import searchengine.crawler.StopStem;
-import searchengine.indexer.Index;
 
 /**
  * Parses tokens from words
@@ -61,14 +60,19 @@ public class Tokenizer {
         String word = currentWord.toString();
 
         //Don't add empty words or stop words
-        if (word.isEmpty() || stopStem.isStopWord(word)){
+        if (word.isEmpty()){
+            return;
+        }
+
+        if (stopStem.isStopWord(word)) {
+            currentWord = new StringBuilder();
             return;
         }
 
         word = stopStem.stem(word);
 
         //Add the current word to the token
-        currentToken.addWord(currentWord.toString());
+        currentToken.addWord(word);
         currentWord = new StringBuilder();
 
         //If we're not in a phrase, end the token

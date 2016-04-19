@@ -1,10 +1,14 @@
 var searchApp = angular.module('searchApp', []);
 
-searchApp.controller('SearchController', function ($scope) {
+searchApp.controller('SearchController', function ($scope, $http) {
+    $scope.query = '';
     $scope.results = [
-        {'name': 'Foo',
-            'snippet': 'Bar'},
-        {'name': 'Hello',
-            'snippet': 'World'},
+        'foo',
+        'bar',
     ];
+    $scope.search = function() {
+        $http.get('/search/' + this.query).success(function(data) {
+            $scope.results = data;
+        });
+    }
 });

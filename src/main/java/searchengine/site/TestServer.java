@@ -3,6 +3,7 @@ package searchengine.site;
 import com.google.gson.Gson;
 import java.io.File;
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.apache.http.config.SocketConfig;
@@ -50,6 +51,8 @@ public class TestServer {
                 })
                 .registerHandler("/search/*", (httpRequest, httpResponse, httpContext) -> {
                     String query = httpRequest.getRequestLine().getUri().substring(8);
+                    query = URLDecoder.decode(query, "UTF-8");
+
                     List<Object> results = getResults(query);
 
                     String json = (new Gson()).toJson(results);
@@ -78,6 +81,6 @@ public class TestServer {
     private static List getResults(String query) throws IOException {
         //searcher.search(query);
         Tokenizer tokenizer = new Tokenizer(query);
-        return tokenizer.getTokens();
+        return tokenizer.allWords();
     }
 }
