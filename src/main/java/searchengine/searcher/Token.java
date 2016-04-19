@@ -9,6 +9,10 @@ import java.util.List;
 public class Token {
     public List<String> words = new ArrayList<>();
 
+    public boolean isPhrase() {
+        return words.size() > 1;
+    }
+
     public List<String> getWords() {
         return words;
     }
