@@ -98,7 +98,7 @@ public class Tokenizer {
      * Gets a list of all the words from the query, whether they are phrases or not
      * @return The words
      */
-    public List<Integer> allWords() {
-        return tokens.stream().flatMap(t -> t.getWordIds().stream()).collect(Collectors.toList());
+    public List<String> allWords() {
+        return tokens.stream().flatMap(t -> t.getWords().stream()).collect(Collectors.toList());
     }
 }

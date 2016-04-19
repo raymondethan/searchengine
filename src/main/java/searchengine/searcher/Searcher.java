@@ -25,17 +25,18 @@ public class Searcher {
     }
 
     public void search(String query) throws IOException {
-        List<Token> tokens = new Tokenizer(query, index).getTokens();
+        List<Token> tokens = new Tokenizer(query).getTokens();
         ArrayList<Posting> matched_documents = new ArrayList<Posting>();
+        System.out.println(tokens.size());
         for (int i = 0; i < tokens.size(); ++i) {
             int min_index = 0;
             int min_size = -1;
             ArrayList<HashMap<Integer, Posting>> postings = new ArrayList<HashMap<Integer, Posting>>();
-            for (int j = 0; j < tokens.get(i).words.size(); ++ j) {
+            for (int j = 0; j < tokens.get(i).getWords().size(); ++ j) {
                 HashMap<Integer, Posting> matched = new HashMap<>();
                 postings.add(matched);
                 //get all of the docs matching the word in the phrase
-                ArrayList<Posting> docs = index.getDocs(tokens.get(i).getWords().get(j));
+                List<Posting> docs = index.getDoc(tokens.get(i).getWords().get(j));
                 //get the size so we can filter based on the smallest number of matched documents
                 if (-1 != min_size || docs.size() < min_size) {
                     min_size = docs.size();
