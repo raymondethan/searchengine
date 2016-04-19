@@ -20,11 +20,8 @@ public class Tokenizer {
     private Token currentToken = new Token();
     private boolean inPhrase = false;
 
-    private Index index;
-
-    public Tokenizer(String query, Index index) {
+    public Tokenizer(String query) {
         this.query = query;
-        this.index = index;
 
         try {
             tokenize();
@@ -69,14 +66,9 @@ public class Tokenizer {
         }
 
         word = stopStem.stem(word);
-        //If the word isn't in the index, don't add it to the query vector
-        Integer id = index.tryGetWordId(word);
-        if (id == null) {
-            return;
-        }
 
         //Add the current word to the token
-        currentToken.addWord(currentWord.toString(), id);
+        currentToken.addWord(currentWord.toString());
         currentWord = new StringBuilder();
 
         //If we're not in a phrase, end the token
