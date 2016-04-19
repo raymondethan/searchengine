@@ -80,6 +80,10 @@ public class Index {
         bodyIndex.delEntry(wordId);
     }
 
+    public Integer tryGetWordId(String word) throws IOException {
+        return wordIndex.tryGetId(word);
+    }
+
     //Get the docId of a given link so we can pass it into insertIntoDocInex
     public int getDocId(String link) throws IOException {
         return linkIndex.getId(link);

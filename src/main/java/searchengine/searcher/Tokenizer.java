@@ -1,14 +1,18 @@
 package searchengine.searcher;
 
-import searchengine.indexer.Index;
-
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import searchengine.crawler.StopStem;
+import searchengine.indexer.Index;
 
 /**
  *
  */
 public class Tokenizer {
+    private StopStem stopStem = new StopStem("stopwords.txt");
+
     private String query;
     private List<Token> tokens = new ArrayList<>();
 
@@ -22,10 +26,14 @@ public class Tokenizer {
         this.query = query;
         this.index = index;
 
-        tokenize();
+        try {
+            tokenize();
+        }catch (IOException e) {
+            System.err.println("Failed to load words :'(");
+        }
     }
 
-    private void tokenize() {
+    private void tokenize() throws IOException {
         for (int i = 0; i < query.length(); ++i) {
             if (query.charAt(i) == '"') {
                 if (inPhrase) {
@@ -51,11 +59,22 @@ public class Tokenizer {
         }
     }
 
-    private void addWord() {
-        if (currentWord.toString().isEmpty()) return;
+    private void addWord() throws IOException {
+        String word = currentWord.toString();
+
+        if (word.isEmpty() || stopStem.isStopWord(word)){
+            return;
+        }
+
+        word = stopStem.stem(word);
+        //If the word isn't in the index, don't add it to the query vector
+        Integer id = index.tryGetWordId(word);
+        if (id == null) {
+            return;
+        }
 
         //Add the current word to the token
-        currentToken.addWord(currentWord.toString(), 0);
+        currentToken.addWord(currentWord.toString(), id);
         currentWord = new StringBuilder();
 
         //If we're not in a phrase, end the token
@@ -65,6 +84,9 @@ public class Tokenizer {
     }
 
     private void endToken() {
+        //Don't add tokens with no words
+        if (currentToken.getWords().size() == 0) return;
+
         tokens.add(currentToken);
 
         currentToken = new Token();
@@ -72,5 +94,9 @@ public class Tokenizer {
 
     public List<Token> getTokens() {
         return tokens;
+    }
+
+    public List<Integer> allWords() {
+        return tokens.stream().flatMap(t -> t.getWordIds().stream()).collect(Collectors.toList());
     }
 }
