@@ -1,10 +1,7 @@
 package searchengine.searcher;
 
-import com.sun.tools.javac.parser.Tokens;
-import searchengine.indexer.Index;
-
-import java.util.ArrayList;
 import java.util.List;
+import searchengine.indexer.Index;
 
 /**
  *
