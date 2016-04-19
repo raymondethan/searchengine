@@ -43,7 +43,7 @@ public class Index {
         wordCountIndex = new DocumentWordCounts(recman);
     }
 
-    public ArrayList<Posting> getDoc(int wordId) throws IOException {
+    public ArrayList<Posting> getDocs(int wordId) throws IOException {
         return bodyIndex.getDocuments(wordId);
     }
 

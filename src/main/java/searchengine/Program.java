@@ -8,6 +8,9 @@ import java.text.ParseException;
 import searchengine.crawler.Crawler;
 import searchengine.indexer.Index;
 import searchengine.indexer.InvertedIndex;
+import searchengine.searcher.Searcher;
+import searchengine.searcher.Token;
+import searchengine.searcher.Tokenizer;
 
 /**
  * The main entry point for the program
@@ -27,9 +30,12 @@ public class Program {
         //Have a look at what we got
         Index index = new Index("inverted_index");
 
-        PrintStream stream = new PrintStream(new FileOutputStream("spider_result.txt"));
-        index.printAll(stream);
-        index.printAll();
+//        PrintStream stream = new PrintStream(new FileOutputStream("spider_result.txt"));
+//        index.printAll(stream);
+//        index.printAll();
 
+        Searcher search = new Searcher(index);
+        search.search("hkust");
+        System.out.println("finished search");
     }
 }

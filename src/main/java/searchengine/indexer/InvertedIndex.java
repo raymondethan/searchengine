@@ -17,20 +17,6 @@ import jdbm.helper.FastIterator;
 import jdbm.htree.HTree;
 import searchengine.crawler.WebPage;
 
-class Posting implements Serializable
-{
-	public int doc;
-	public int freq;
-    public ArrayList<Integer> positions;
-
-	Posting(int doc, int freq)
-	{
-        positions = new ArrayList<>();
-		this.doc = doc;
-		this.freq = freq;
-	}
-}
-
 public class InvertedIndex
 {
 	private RecordManager recman;
