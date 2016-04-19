@@ -1,17 +1,11 @@
 package searchengine.searcher;
 
-import com.sun.tools.classfile.Opcode;
-import com.sun.tools.javac.code.Attribute;
-import com.sun.tools.javac.parser.Tokens;
-import searchengine.indexer.Index;
-import searchengine.indexer.Posting;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import searchengine.indexer.Index;
+import searchengine.indexer.Posting;
 
 /**
  *
