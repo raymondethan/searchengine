@@ -2,12 +2,17 @@ package searchengine.searcher;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  *
  */
 public class DocumentVector {
-    public List<Double> tfIdfs = new ArrayList<>();
+    private List<Double> tfIdfs = new ArrayList<>();
+
+    public static boolean sameLength(DocumentVector a, DocumentVector b) {
+        return a.tfIdfs.size() == b.tfIdfs.size();
+    }
 
     public static DocumentVector div(DocumentVector a, DocumentVector b) {
         DocumentVector result = new DocumentVector();
@@ -50,6 +55,22 @@ public class DocumentVector {
 
     public static double cosineDistance(DocumentVector a, DocumentVector b) {
         return dot(a, b)/(a.length()*b.length());
+    }
+
+    public double get(int dimension) {
+        return tfIdfs.get(dimension);
+    }
+
+    public Stream<Double> vectorStream() {
+        return tfIdfs.stream();
+    }
+
+    public int dimensions() {
+        return tfIdfs.size();
+    }
+
+    public List<Double> getTfIdfs() {
+        return tfIdfs;
     }
 
     public double length() {
