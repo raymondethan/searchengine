@@ -36,6 +36,12 @@ public class TestServer {
                     System.err.println(e.getMessage());
                     System.err.println(e.getStackTrace());
                 })
+                .registerHandler("/controller.js", (httpRequest, httpResponse, httpContext) -> {
+                    //TODO send html file
+                    File file = new File("controller.js");
+                    FileEntity entity = new FileEntity(file);
+                    httpResponse.setEntity(entity);
+                })
                 .registerHandler("/", (httpRequest, httpResponse, httpContext) -> {
                     //TODO send html file
                     File file = new File("index.html");
