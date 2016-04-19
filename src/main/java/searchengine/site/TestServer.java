@@ -30,21 +30,24 @@ public class TestServer {
                 .build();
 
         final HttpServer server = ServerBootstrap.bootstrap()
-                .setListenerPort(8080)
+                .setListenerPort(80)
                 .setServerInfo("A magical test server")
                 .setSocketConfig(config)
                 .setExceptionLogger(e -> {
                     System.err.println(e.getMessage());
                     System.err.println(e.getStackTrace());
                 })
+                .registerHandler("/styles.css", (httpRequest, httpResponse, httpContext) -> {
+                    File file = new File("styles.css");
+                    FileEntity entity = new FileEntity(file);
+                    httpResponse.setEntity(entity);
+                })
                 .registerHandler("/controller.js", (httpRequest, httpResponse, httpContext) -> {
-                    //TODO send html file
                     File file = new File("controller.js");
                     FileEntity entity = new FileEntity(file);
                     httpResponse.setEntity(entity);
                 })
                 .registerHandler("/", (httpRequest, httpResponse, httpContext) -> {
-                    //TODO send html file
                     File file = new File("index.html");
                     FileEntity entity = new FileEntity(file, ContentType.TEXT_HTML);
                     httpResponse.setEntity(entity);
