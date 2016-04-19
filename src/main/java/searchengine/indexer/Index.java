@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
  *
  */
 public class Index {
+    private static final String BODY_IDF_NAME = "body_idfs";
+    private static final String TITLE_IDF_NAME = "title_idfs";
     private static final String BODY_INDEX_NAME = "body_index";
     private static final String TITLE_INDEX_NAME = "title_index";
 
@@ -21,12 +23,14 @@ public class Index {
     private static final int MAX_TERMS_PRINTED = 5;
 
     private InvertedIndex bodyIndex;
+    private InverseDocumentFrequencies bodyInverseDocumentFrequencies;
     private InvertedIndex titleIndex;
+    private InverseDocumentFrequencies titleInverseDocumentFrequencies;
 
     private WordIndex wordIndex;
     private LinkIndex linkIndex;
     private DocumentWordCounts wordCountIndex;
-    private BasicPersistentMap docIdIndex;
+    private DocumentIndex docIdIndex;
 
     private RecordManager recman;
 
@@ -39,12 +43,32 @@ public class Index {
 
         wordIndex = new WordIndex(recman);
         linkIndex = new LinkIndex(recman);
-        docIdIndex = new BasicPersistentMap<>(DOCIDINDEX_NAME,recman);
+        docIdIndex = new DocumentIndex(DOCIDINDEX_NAME,recman);
         wordCountIndex = new DocumentWordCounts(recman);
+        bodyInverseDocumentFrequencies = new InverseDocumentFrequencies(BODY_IDF_NAME, recman);
+        titleInverseDocumentFrequencies = new InverseDocumentFrequencies(TITLE_IDF_NAME, recman);
     }
 
-    public ArrayList<Posting> getDocs(int wordId) throws IOException {
+    public List<Posting> getDoc(String word) throws IOException {
+        Integer wordId = wordIndex.tryGetId(word);
+        if (wordId == null) return new ArrayList<>();
+
+        return getDoc(wordId);
+    }
+
+    public List<Posting> getDoc(int wordId) throws IOException {
         return bodyIndex.getDocuments(wordId);
+    }
+
+    public List<Posting> getTitleDoc(String word) throws IOException {
+        Integer wordId = wordIndex.tryGetId(word);
+        if (wordId == null) return new ArrayList<>();
+
+        return getDoc(wordId);
+    }
+
+    public List<Posting> getTitleDoc(int wordId) throws IOException {
+        return titleIndex.getDocuments(wordId);
     }
 
     public void addChildLinks(String link, List<String> children) throws IOException {
@@ -65,6 +89,7 @@ public class Index {
 
         //Add the word to the inverted index
         bodyIndex.addEntry(wordId, docId, pos);
+        bodyInverseDocumentFrequencies.addDocument(wordId, docId);
     }
 
     public void addTitleEntry(String title, String url, int pos) throws IOException {
@@ -72,12 +97,17 @@ public class Index {
         int wordId = wordIndex.getId(title);
 
         titleIndex.addEntry(wordId,docId, pos);
+        titleInverseDocumentFrequencies.addDocument(wordId, docId);
     }
 
     public void delEntry(String word) throws IOException {
         int wordId = wordIndex.getId(word);
 
         bodyIndex.delEntry(wordId);
+    }
+
+    public Integer tryGetWordId(String word) throws IOException {
+        return wordIndex.tryGetId(word);
     }
 
     //Get the docId of a given link so we can pass it into insertIntoDocInex
@@ -89,6 +119,30 @@ public class Index {
     public void insertIntoDocIndex(int docId, String url, Date lastModified, Integer size, String title) throws IOException {
         WebPage page = new WebPage(docId, url, lastModified, size, title);
         docIdIndex.put(docId, page);
+    }
+
+    public double idf(String word) throws IOException {
+        Integer id = wordIndex.tryGetId(word);
+        return idf(id);
+    }
+
+    public double idf(Integer wordId) throws IOException {
+        int contain = bodyInverseDocumentFrequencies.containingDocuments(wordId);
+        if (contain == 0) return 0;
+
+        return Math.log(docIdIndex.getDocumentCount()/contain);
+    }
+
+    public double titleIdf(String word) throws IOException {
+        Integer id = wordIndex.tryGetId(word);
+        return idf(id);
+    }
+
+    public double titleIdf(Integer wordId) throws IOException {
+        int contain = titleInverseDocumentFrequencies.containingDocuments(wordId);
+        if (contain == 0) return 0;
+
+        return Math.log(docIdIndex.getDocumentCount()/contain);
     }
 
     public WebPage getWebPage(int docId) throws IOException {

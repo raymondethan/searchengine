@@ -49,8 +49,13 @@ public class BasicIndex<T> {
         return id;
     }
 
+    public Integer tryGetId(T item) throws IOException {
+        Integer id = inverseMap.get(item);
+        return id;
+    }
+
     public T get(int id) throws IOException {
-        return (T) map.get(id);
+        return map.get(id);
     }
 
     public FastIterator getIds() throws IOException {
