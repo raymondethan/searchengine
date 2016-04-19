@@ -1,17 +1,27 @@
 package searchengine.searcher;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  *
  */
 public class Tokenizer {
-    public Tokenizer(String query) {
+    private String query;
+    private List<Token> tokens = new ArrayList<>();
 
+    public Tokenizer(String query) {
+        tokenize();
     }
 
-    public List<String> getTokens() {
+    private void tokenize() {
         boolean seenQuote = false;
-        return null;
+    }
+
+
+
+
+    public List<Token> getTokens() {
+        return tokens;
     }
 }
