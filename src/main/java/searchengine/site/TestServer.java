@@ -1,11 +1,13 @@
 package searchengine.site;
 
 import com.google.gson.Gson;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.apache.http.config.SocketConfig;
 import org.apache.http.entity.ContentType;
+import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.bootstrap.HttpServer;
 import org.apache.http.impl.bootstrap.ServerBootstrap;
@@ -36,6 +38,9 @@ public class TestServer {
                 })
                 .registerHandler("/", (httpRequest, httpResponse, httpContext) -> {
                     //TODO send html file
+                    File file = new File("index.html");
+                    FileEntity entity = new FileEntity(file, ContentType.TEXT_HTML);
+                    httpResponse.setEntity(entity);
                 })
                 .registerHandler("/search/*", (httpRequest, httpResponse, httpContext) -> {
                     String query = httpRequest.getRequestLine().getUri().substring(8);
