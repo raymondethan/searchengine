@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
  *
  */
 public class Index {
+    private static final String BODY_IDF_NAME = "body_idfs";
+    private static final String TITLE_IDF_NAME = "title_idfs";
     private static final String BODY_INDEX_NAME = "body_index";
     private static final String TITLE_INDEX_NAME = "title_index";
 
@@ -21,7 +23,9 @@ public class Index {
     private static final int MAX_TERMS_PRINTED = 5;
 
     private InvertedIndex bodyIndex;
+    private InverseDocumentFrequencies bodyInverseDocumentFrequencies;
     private InvertedIndex titleIndex;
+    private InverseDocumentFrequencies titleInverseDocumentFrequencies;
 
     private WordIndex wordIndex;
     private LinkIndex linkIndex;
@@ -41,6 +45,8 @@ public class Index {
         linkIndex = new LinkIndex(recman);
         docIdIndex = new BasicPersistentMap<>(DOCIDINDEX_NAME,recman);
         wordCountIndex = new DocumentWordCounts(recman);
+        bodyInverseDocumentFrequencies = new InverseDocumentFrequencies(BODY_IDF_NAME, recman);
+        titleInverseDocumentFrequencies = new InverseDocumentFrequencies(TITLE_IDF_NAME, recman);
     }
 
     public ArrayList<Posting> getDoc(int wordId) throws IOException {
@@ -65,6 +71,7 @@ public class Index {
 
         //Add the word to the inverted index
         bodyIndex.addEntry(wordId, docId, pos);
+        bodyInverseDocumentFrequencies.addDocument(wordId, docId);
     }
 
     public void addTitleEntry(String title, String url, int pos) throws IOException {
@@ -72,6 +79,7 @@ public class Index {
         int wordId = wordIndex.getId(title);
 
         titleIndex.addEntry(wordId,docId, pos);
+        titleInverseDocumentFrequencies.addDocument(wordId, docId);
     }
 
     public void delEntry(String word) throws IOException {
