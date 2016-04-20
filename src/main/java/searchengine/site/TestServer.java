@@ -1,4 +1,4 @@
-package searchengine.site;
+/*package searchengine.site;
 
 import com.google.gson.Gson;
 import java.io.File;
@@ -20,6 +20,7 @@ import searchengine.searcher.Tokenizer;
 /**
  *
  */
+/*
 public class TestServer {
     private static Searcher searcher;
     public static void main(String[] args) throws IOException {
@@ -89,3 +90,4 @@ public class TestServer {
         return tokenizer.allWords();
     }
 }
+*/

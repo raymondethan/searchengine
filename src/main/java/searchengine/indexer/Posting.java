@@ -12,6 +12,8 @@ public class Posting implements Serializable
     public int freq;
     public ArrayList<Integer> positions;
 
+    private static long serialVersionUID = 8987159344547339369L;
+
     Posting(int doc, int freq)
     {
         positions = new ArrayList<>();

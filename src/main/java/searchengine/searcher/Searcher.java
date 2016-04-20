@@ -1,9 +1,14 @@
 package searchengine.searcher;
 
+import com.sun.tools.classfile.Opcode;
+import com.sun.tools.javac.code.Attribute;
+import com.sun.tools.javac.parser.Tokens;
+import searchengine.indexer.Index;
+import searchengine.indexer.Posting;
+
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+
 import searchengine.indexer.Index;
 import searchengine.indexer.Posting;
 
@@ -41,33 +46,58 @@ public class Searcher {
             }
             //filter the documents where words in the phrase are not adjacent
             ArrayList<Posting> result = new ArrayList<Posting>();
-            for (Posting doc_match : postings.get(min_index).values()) {
-                boolean found_valid_position_difference = false;
-                for (int j = 0; j < postings.size(); ++j) {
-                    //make sure we don't compare against the smallest posting list because thats what we're iterating over
-                    if (j != min_index) {
-                        Posting doc_in_other_posting = postings.get(j).get(doc_match.doc);
-                        if (null != doc_in_other_posting) {
-                            //Assumes posting stores words position in an ordered array
-                            //Since we parse a document in order, this should remain a valid assumption
-                            int doc_match_index = 0;
-                            int other_doc_index = 0;
-                            //noe we have to iterate through the list of word occurances to verify that the words in each posting occur in the same order as in the query
-                            while (doc_match_index < doc_match.positions.size() && other_doc_index < doc_in_other_posting.positions.size()) {
+            if (postings.size() > 1) {
+                for (Posting doc_match : postings.get(min_index).values()) {
+                    //set this variable to true now, we AND it with the boolean variable to determine if all docuents contain a valid position
+                    boolean found_valid_position_difference = true;
+                    boolean doc_missing_from_other_posting_list = false;
+                    int j = 0;
+                    while (!doc_missing_from_other_posting_list && j < postings.size()) {
+                        //make sure we don't compare against the smallest posting list because thats what we're iterating over
+                        if (j != min_index) {
+                            Posting doc_in_other_posting = postings.get(j).get(doc_match.doc);
+                            if (null != doc_in_other_posting) {
+                                //Assumes posting stores words position in an ordered array
+                                //Since we parse a document in order, this should remain a valid assumption
+                                int doc_match_index = 0;
+                                int other_doc_index = 0;
+                                boolean doc_contains_valid_position = false;
+                                //now we have to iterate through the list of word occurances to verify that the words in each posting occur in the same order as in the query
+                                while (!doc_contains_valid_position && doc_match_index < doc_match.positions.size() && other_doc_index < doc_in_other_posting.positions.size()) {
 
-                                if (doc_match.positions.get(doc_match_index) - doc_in_other_posting.positions.get(other_doc_index) == postings.indexOf(doc_match) - postings.indexOf(doc_in_other_posting)) {
-                                    found_valid_position_difference = true;
+                                    int calculated_position_difference = doc_match.positions.get(doc_match_index) - doc_in_other_posting.positions.get(other_doc_index);;
+                                    //min_index is the position of doc_match's word in the posting list and query
+                                    //j is the position of the other doc's word in the posting list and query
+                                    int needed_position_difference = min_index - j;
+
+                                    if (calculated_position_difference == needed_position_difference) {
+                                        doc_contains_valid_position = true;
+                                    }
+                                    else if (calculated_position_difference > needed_position_difference) {
+                                        other_doc_index += 1;
+                                    }
+                                    else {
+                                        doc_match_index += 1;
+                                    }
                                 }
+                                found_valid_position_difference = found_valid_position_difference && doc_contains_valid_position;
+                            }
+                            else {
+                                doc_missing_from_other_posting_list = true;
                             }
                         }
+                        ++j;
+                    }
+                    if (found_valid_position_difference) {
+                        result.add(doc_match);
                     }
                 }
-                if (found_valid_position_difference) {
-                    result.add(doc_match);
-                }
+            }
+            else {
+                postings.get(0).forEach((integer, posting) -> result.add(posting));
             }
             for (Posting p : result) {
-                System.out.println(index.getWebPage(p.doc));
+                System.out.println(index.getWebPage(p.doc).url);
             }
         }
 
