@@ -30,8 +30,6 @@ public class Searcher {
         for (int i = 0; i < tokens.size(); ++i) {
             int min_index = 0;
             int min_size = -1;
-            //initialize to first word in token
-            String word_with_min_posting = tokens.get(0).getWords().get(0);
             ArrayList<HashMap<Integer, Posting>> postings = new ArrayList<HashMap<Integer, Posting>>();
             for (int j = 0; j < tokens.get(i).getWords().size(); ++ j) {
                 HashMap<Integer, Posting> matched = new HashMap<>();
@@ -43,17 +41,15 @@ public class Searcher {
                 if (-1 != min_size || docs.size() < min_size) {
                     min_size = docs.size();
                     min_index = j;
-                    word_with_min_posting = word;
                 }
                 //add all Postings to a dictionary for constant access later
                 docs.stream().forEach(posting -> postings.get(postings.size()-1).put(posting.doc,posting));
             }
-            //filter the documents where words in the phrase are not adjacent
+            //filter out the documents where words in the phrase are not adjacent
             ArrayList<Posting> result = new ArrayList<Posting>();
             if (postings.size() > 1) {
-                //HashMap<String, HashSet<Integer>> offsets = getallOffsets(query, word_with_min_posting);
                 for (Posting doc_match : postings.get(min_index).values()) {
-                    //set this variable to true now, we AND it with the boolean variable to determine if all docuents contain a valid position
+                    //set this variable to true now, we AND it with the boolean variable to determine if all documents contain a valid position
                     boolean found_valid_position_difference = true;
                     boolean doc_missing_from_other_posting_list = false;
                     int j = 0;
@@ -73,11 +69,12 @@ public class Searcher {
                                     int calculated_position_difference = doc_match.positions.get(doc_match_index) - doc_in_other_posting.positions.get(other_doc_index);;
                                     //min_index is the position of doc_match's word in the posting list and query
                                     //j is the position of the other doc's word in the posting list and query
-                                    int needed_position_difference = tokens.get(i).getPositions().get(min_index) - tokens.get(i).getPositions().get(j);//min_index - j;
+                                    int needed_position_difference = tokens.get(i).getPositions().get(min_index) - tokens.get(i).getPositions().get(j);
 
                                     if (calculated_position_difference == needed_position_difference) {
                                         doc_contains_valid_position = true;
                                     }
+                                    //efficiently iterate through the position arrays of each posting
                                     else if (calculated_position_difference > needed_position_difference) {
                                         other_doc_index += 1;
                                     }
