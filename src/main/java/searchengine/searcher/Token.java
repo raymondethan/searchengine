@@ -8,9 +8,11 @@ import java.util.List;
  */
 public class Token {
     private List<String> words = new ArrayList<>();
+    private ArrayList<Integer> positions = new ArrayList<Integer>();
 
-    public void addWord(String word) {
+    public void addWord(String word, int query_word_index) {
         words.add(word);
+        positions.add(query_word_index);
     }
 
     public boolean isPhrase() {
@@ -19,5 +21,9 @@ public class Token {
 
     public List<String> getWords() {
         return words;
+    }
+
+    public ArrayList<Integer> getPositions() {
+        return positions;
     }
 }

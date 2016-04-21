@@ -35,7 +35,7 @@ public class Program {
 //        index.printAll();
 
         Searcher search = new Searcher(index);
-        search.search("\"introduction quality assurance\"");
+        search.search("\"introduction to the quality assurance\"");
         System.out.println("finished search");
     }
 }

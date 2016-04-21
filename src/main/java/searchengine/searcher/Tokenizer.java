@@ -19,6 +19,8 @@ public class Tokenizer {
     private Token currentToken = new Token();
     private boolean inPhrase = false;
 
+    private int query_word_index = 0;
+
     public Tokenizer(String query) {
         this.query = query;
 
@@ -64,6 +66,8 @@ public class Tokenizer {
             return;
         }
 
+        ++query_word_index;
+
         if (stopStem.isStopWord(word)) {
             currentWord = new StringBuilder();
             return;
@@ -72,7 +76,7 @@ public class Tokenizer {
         word = stopStem.stem(word);
 
         //Add the current word to the token
-        currentToken.addWord(word);
+        currentToken.addWord(word, query_word_index);
         currentWord = new StringBuilder();
 
         //If we're not in a phrase, end the token

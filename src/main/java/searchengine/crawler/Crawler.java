@@ -119,7 +119,6 @@ public class Crawler {
                 e.printStackTrace();
                 continue;
             }
-
             for (int i = 0; i < words.size(); ++i) {
                 if (!stopStem.isStopWord(words.get(i))) {
                     String stemmed = stopStem.stem(words.get(i));
