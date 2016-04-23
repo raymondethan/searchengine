@@ -8,6 +8,12 @@ public class SearchResult {
     private String description;
     private String link;
 
+    public SearchResult(String title, String description, String link) {
+        this.title = title;
+        this.description = description;
+        this.link = link;
+    }
+
     public String getTitle() {
         return title;
     }

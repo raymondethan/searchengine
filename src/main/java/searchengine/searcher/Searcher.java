@@ -3,6 +3,7 @@ package searchengine.searcher;
 import com.sun.tools.classfile.Opcode;
 import com.sun.tools.javac.code.Attribute;
 import com.sun.tools.javac.parser.Tokens;
+import searchengine.crawler.WebPage;
 import searchengine.indexer.Index;
 import searchengine.indexer.Posting;
 
@@ -25,7 +26,7 @@ public class Searcher {
 
     public List<SearchResult> search(String query) throws IOException {
         List<Token> tokens = new Tokenizer(query).getTokens();
-        ArrayList<Posting> matched_documents = new ArrayList<Posting>();
+        ArrayList<SearchResult> matched_documents = new ArrayList<SearchResult>();
         System.out.println(tokens.size());
         for (int i = 0; i < tokens.size(); ++i) {
             int min_index = 0;
@@ -46,7 +47,7 @@ public class Searcher {
                 docs.stream().forEach(posting -> postings.get(postings.size()-1).put(posting.doc,posting));
             }
             //filter out the documents where words in the phrase are not adjacent
-            ArrayList<Posting> result = new ArrayList<Posting>();
+            //ArrayList<SearchResult> result = new ArrayList<SearchResult>();
             if (postings.size() > 1) {
                 for (Posting doc_match : postings.get(min_index).values()) {
                     //set this variable to true now, we AND it with the boolean variable to determine if all documents contain a valid position
@@ -91,55 +92,29 @@ public class Searcher {
                         ++j;
                     }
                     if (found_valid_position_difference) {
-                        result.add(doc_match);
+                        matched_documents.add(convertPostToSearchResult(doc_match));
                     }
                 }
             }
             else {
-                postings.get(0).forEach((integer, posting) -> result.add(posting));
-            }
-            for (Posting p : result) {
-                System.out.println(index.getWebPage(p.doc).url);
-            }
-            matched_documents.addAll(result);
-        }
-
-        return new ArrayList<>();
-    }
-
-    private HashMap<String, HashSet<Integer>> getallOffsets(String query, String word) {
-        HashMap<String, HashSet<Integer>> offsets = new HashMap<String, HashSet<Integer>>();
-        String[] query_arr = query.split(" ");
-        int index_of_word = Arrays.asList(query_arr).indexOf(word);
-        for (int i = 0; i < query_arr.length; ++i) {
-            if (offsets.containsKey(query_arr[i])) {
-                offsets.get(query_arr[i]).add(index_of_word - i);
-            } else {
-                offsets.put(word, new HashSet<Integer>(index_of_word - i));
+                postings.get(0).forEach((integer, posting) -> {
+                    try {
+                        matched_documents.add(convertPostToSearchResult(posting));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
             }
         }
-        return offsets;
+
+        return matched_documents;
     }
 
-//    public ArrayList<HashMap<Integer, Posting>> getAllMatchingPostingsFromIndex(List<Token> tokens, int i, Index index) throws IOException {
-//        int min_index = 0;
-//        int min_size = -1;
-//        ArrayList<HashMap<Integer, Posting>> postings = new ArrayList<HashMap<Integer, Posting>>();
-//        for (int j = 0; j < tokens.get(i).words.size(); ++ j) {
-//            HashMap<Integer, Posting> matched = new HashMap<>();
-//            postings.add(matched);
-//            //get all of the docs matching the word in the phrase
-//            ArrayList<Posting> docs = index.getDocs(tokens.get(i).getWords().get(j));
-//            //get the size so we can filter based on the smallest number of matched documents
-//            if (-1 != min_size || docs.size() < min_size) {
-//                min_size = docs.size();
-//                min_index = j;
-//            }
-//            //add all Postings to a dictionary for constant access later
-//            docs.stream().forEach(posting -> postings.get(postings.size()-1).put(posting.doc,posting));
-//        }
-//
-//        return postings;
-//    }
+    public SearchResult convertPostToSearchResult(Posting post) throws IOException {
+        WebPage webpage = index.getWebPage(post.doc);
+        return new SearchResult(webpage.title, "description", webpage.url);
+    }
+
+
 
 }

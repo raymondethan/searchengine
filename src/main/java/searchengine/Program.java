@@ -4,10 +4,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 import searchengine.crawler.Crawler;
 import searchengine.indexer.Index;
 import searchengine.indexer.InvertedIndex;
+import searchengine.searcher.SearchResult;
 import searchengine.searcher.Searcher;
 import searchengine.searcher.Token;
 import searchengine.searcher.Tokenizer;
@@ -35,7 +38,8 @@ public class Program {
 //        index.printAll();
 
         Searcher search = new Searcher(index);
-        search.search("Brahim \"introduction to the quality assurance\"");
+        List<SearchResult> result = search.search("Brahim \"introduction to the quality assurance\"");
+        result.forEach(searchResult -> System.out.println(searchResult.getLink()));
         System.out.println("finished search");
     }
 }
