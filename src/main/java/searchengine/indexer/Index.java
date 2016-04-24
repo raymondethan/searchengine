@@ -146,8 +146,32 @@ public class Index {
         return Math.log(docIdIndex.getDocumentCount()/contain);
     }
 
+    public int getDocumentCount() {
+        return docIdIndex.getDocumentCount();
+    }
+
     public WebPage getWebPage(int docId) throws IOException {
         return (WebPage) docIdIndex.get(docId);
+    }
+
+    public int getNumChildren(int docId) throws IOException {
+        return linkIndex.getNumChildren(docId);
+    }
+
+    public WebPage getWebPage(String url) throws IOException {
+        return getWebPage(getDocId(url));
+    }
+
+    public FastIterator getDocIds() throws IOException {
+        return docIdIndex.getIds();
+    }
+
+    public void updatePageRank(int docId, float pagerank) throws IOException {
+        docIdIndex.updatePageRank(docId,pagerank);
+    }
+
+    public List<String> getParents(Integer docId) throws IOException {
+        return linkIndex.getParents(docId);
     }
 
     public void printAll(PrintStream stream) throws IOException {

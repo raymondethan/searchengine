@@ -68,6 +68,12 @@ public class LinkIndex extends BasicIndex<String> {
      */
     public List<String> getParents(String link) throws IOException {
         int linkId = getId(link);
+        return getParents(linkId);
+//        List<String> result = (List<String>) parentHashTree.get(linkId);
+//        return result == null ? new ArrayList<>() : result;
+    }
+
+    public List<String> getParents(Integer linkId) throws IOException {
         List<String> result = (List<String>) parentHashTree.get(linkId);
         return result == null ? new ArrayList<>() : result;
     }
@@ -112,5 +118,9 @@ public class LinkIndex extends BasicIndex<String> {
         int linkId = getId(link);
         List<String> result = (List<String>) childHashTree.get(linkId);
         return result == null ? new ArrayList<>() : result;
+    }
+
+    public int getNumChildren(int docId) throws IOException {
+        return ((List<String>) childHashTree.get(docId)).size();
     }
 }

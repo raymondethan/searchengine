@@ -27,7 +27,6 @@ public class Searcher {
     public List<SearchResult> search(String query) throws IOException {
         List<Token> tokens = new Tokenizer(query).getTokens();
         ArrayList<SearchResult> matched_documents = new ArrayList<SearchResult>();
-        System.out.println(tokens.size());
         for (int i = 0; i < tokens.size(); ++i) {
             int min_index = 0;
             int min_size = -1;

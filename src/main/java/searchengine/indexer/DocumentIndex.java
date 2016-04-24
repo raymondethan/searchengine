@@ -3,6 +3,7 @@ package searchengine.indexer;
 import java.io.IOException;
 import jdbm.RecordManager;
 import jdbm.helper.FastIterator;
+import searchengine.crawler.WebPage;
 
 /**
  *
@@ -29,5 +30,11 @@ public class DocumentIndex<T,K> extends BasicPersistentMap<T,K> {
 
     public int getDocumentCount() {
         return documentCount;
+    }
+
+    public void updatePageRank(T key, float pagerank) throws IOException {
+        WebPage doc = (WebPage) get(key);
+        doc.pagerank = pagerank;
+        super.put(key, (K) doc);
     }
 }

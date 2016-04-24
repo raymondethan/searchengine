@@ -10,6 +10,7 @@ import java.util.List;
 import searchengine.crawler.Crawler;
 import searchengine.indexer.Index;
 import searchengine.indexer.InvertedIndex;
+import searchengine.pagerank.PageRank;
 import searchengine.searcher.SearchResult;
 import searchengine.searcher.Searcher;
 import searchengine.searcher.Token;
@@ -33,9 +34,14 @@ public class Program {
         //Have a look at what we got
         Index index = new Index("inverted_index");
 
-        PrintStream stream = new PrintStream(new FileOutputStream("spider_result.txt"));
-        index.printAll(stream);
-        index.printAll();
+        System.out.println("Running page rank");
+        PageRank pageRanker = new PageRank(index);
+        pageRanker.rankPages();
+        pageRanker.printPageRanks();
+
+//        PrintStream stream = new PrintStream(new FileOutputStream("spider_result.txt"));
+//        index.printAll(stream);
+//        index.printAll();
 
         Searcher search = new Searcher(index);
         List<SearchResult> result = search.search("search");
