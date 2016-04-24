@@ -39,7 +39,7 @@ public class Searcher {
                 //get all of the docs matching the word in the phrase
                 List<Posting> docs = index.getDoc(word);
                 //get the size so we can filter based on the smallest number of matched documents
-                if (-1 != min_size || docs.size() < min_size) {
+                if (-1 == min_size || docs.size() < min_size) {
                     min_size = docs.size();
                     min_index = j;
                 }
@@ -54,7 +54,7 @@ public class Searcher {
                     boolean found_valid_position_difference = true;
                     boolean doc_missing_from_other_posting_list = false;
                     int j = 0;
-                    while (!doc_missing_from_other_posting_list && j < postings.size()) {
+                    while (found_valid_position_difference && !doc_missing_from_other_posting_list && j < postings.size()) {
                         //make sure we don't compare against the smallest posting list because thats what we're iterating over
                         if (j != min_index) {
                             Posting doc_in_other_posting = postings.get(j).get(doc_match.doc);
@@ -87,6 +87,7 @@ public class Searcher {
                             }
                             else {
                                 doc_missing_from_other_posting_list = true;
+                                found_valid_position_difference = false;
                             }
                         }
                         ++j;

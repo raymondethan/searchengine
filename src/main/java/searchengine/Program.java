@@ -20,7 +20,7 @@ import searchengine.searcher.Tokenizer;
  */
 public class Program {
     public static void main(String[] args) throws IOException {
-        Crawler crawler = new Crawler("http://www.cse.ust.hk/", 30);
+        Crawler crawler = new Crawler("http://www.cse.ust.hk/~ericzhao/COMP4321/TestPages/testpage.htm", 300);
 
         try {
             crawler.begin();
@@ -38,7 +38,7 @@ public class Program {
 //        index.printAll();
 
         Searcher search = new Searcher(index);
-        List<SearchResult> result = search.search("Brahim \"introduction to the quality assurance\"");
+        List<SearchResult> result = search.search("search");
         result.forEach(searchResult -> System.out.println(searchResult.getLink()));
         System.out.println("finished search");
     }
