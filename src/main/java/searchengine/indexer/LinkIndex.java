@@ -42,11 +42,11 @@ public class LinkIndex extends BasicIndex<String> {
 
     /**
      * Adds a parent for a link
-     * @param link The link to add the parent for
+     * @param linkId The link to add the parent for
      * @param parent The parent link
      */
-    public void addParent(String link, String parent) throws IOException {
-        int linkId = getId(link);
+    public void addParent(Integer linkId, String parent) throws IOException {
+        //int linkId = getId(link);
 
         List<String> parents = (List<String>) parentHashTree.get(linkId);
         if (parents == null)
@@ -74,11 +74,11 @@ public class LinkIndex extends BasicIndex<String> {
 
     /**
      * Adds a collection of children to a link
-     * @param link The link to add the children to
+     * @param linkId The link to add the children to
      * @param children The children
      */
-    public void addChildren(String link, List<String> children) throws IOException {
-        int linkId = getId(link);
+    public void addChildren(Integer linkId, List<String> children) throws IOException {
+        //int linkId = getId(link);
 
         List<String> currentChildren = (List<String>) childHashTree.get(linkId);
         if (currentChildren == null)
@@ -93,14 +93,14 @@ public class LinkIndex extends BasicIndex<String> {
 
     /**
      * Adds a child link to a link
-     * @param link The link to add the child to
+     * @param linkId The link to add the child to
      * @param child The child link
      */
-    public void addChild(String link, String child) throws IOException {
+    public void addChild(Integer linkId, String child) throws IOException {
         List<String> children = new ArrayList<>();
         children.add(child);
 
-        addChildren(link, children);
+        addChildren(linkId, children);
     }
 
     /**

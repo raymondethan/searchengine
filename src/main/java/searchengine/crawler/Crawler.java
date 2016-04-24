@@ -105,7 +105,7 @@ public class Crawler {
 
                 //TODO: check that the links are getting stored correctly - there is a page that only 4 child links are getting printed out for, which does not match online
                 //Save the child links
-                index.addChildLinks(current, links);
+                index.addChildLinks(currDocId, links);
 
                 for (String link : links) {
                     //Add the links to the frontier

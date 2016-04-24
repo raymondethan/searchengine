@@ -20,7 +20,7 @@ import searchengine.searcher.Tokenizer;
  */
 public class Program {
     public static void main(String[] args) throws IOException {
-        Crawler crawler = new Crawler("http://www.cse.ust.hk/~ericzhao/COMP4321/TestPages/testpage.htm", 300);
+        Crawler crawler = new Crawler("http://www.cse.ust.hk/~ericzhao/COMP4321/TestPages/testpage.htm", 30);
 
         try {
             crawler.begin();
@@ -33,9 +33,9 @@ public class Program {
         //Have a look at what we got
         Index index = new Index("inverted_index");
 
-//        PrintStream stream = new PrintStream(new FileOutputStream("spider_result.txt"));
-//        index.printAll(stream);
-//        index.printAll();
+        PrintStream stream = new PrintStream(new FileOutputStream("spider_result.txt"));
+        index.printAll(stream);
+        index.printAll();
 
         Searcher search = new Searcher(index);
         List<SearchResult> result = search.search("search");

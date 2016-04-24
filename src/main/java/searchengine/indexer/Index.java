@@ -71,12 +71,13 @@ public class Index {
         return titleIndex.getDocuments(wordId);
     }
 
-    public void addChildLinks(String link, List<String> children) throws IOException {
-        linkIndex.addChildren(link, children);
+    public void addChildLinks(Integer linkId, List<String> children) throws IOException {
+        linkIndex.addChildren(linkId, children);
     }
 
     public void addParentLink(String link, String parent) throws IOException {
-        linkIndex.addParent(link, parent);
+        Integer linkId = getDocId(link);
+        linkIndex.addParent(linkId, parent);
     }
 
     public void addEntry(String word, String link, int pos) throws IOException {
