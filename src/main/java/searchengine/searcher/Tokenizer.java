@@ -20,6 +20,7 @@ public class Tokenizer {
     private boolean inPhrase = false;
 
     private int query_word_index = 0;
+    private int spaces = 0;
 
     public Tokenizer(String query) {
         this.query = query;
@@ -33,6 +34,8 @@ public class Tokenizer {
 
     private void tokenize() throws IOException {
         for (int i = 0; i < query.length(); ++i) {
+
+
             if (query.charAt(i) == '"') {
                 if (inPhrase) {
                     addWord();
@@ -46,6 +49,10 @@ public class Tokenizer {
                 addWord();
             }else  {
                 currentWord.append(query.charAt(i));
+            }
+
+            if (query.charAt(i) == ' ') {
+                spaces++;
             }
         }
 
@@ -89,6 +96,7 @@ public class Tokenizer {
         //Don't add tokens with no words
         if (currentToken.getWords().size() == 0) return;
 
+        currentToken.setFirstWordIndex(spaces - currentToken.getWords().size() + 1);
         tokens.add(currentToken);
 
         currentToken = new Token();

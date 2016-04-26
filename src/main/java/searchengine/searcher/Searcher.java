@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 import searchengine.crawler.WebPage;
 import searchengine.indexer.Index;
 import searchengine.indexer.Posting;
@@ -28,7 +30,7 @@ public class Searcher {
         DocumentVector queryVector = new DocumentVector(getQueryTfIdfs(tokenizer.allWords()));
         Map<Integer, DocumentVector> documentVectors = new HashMap<>();
 
-        int wordsSoFar = 0;
+        int queryLength = tokenizer.allWords().size();
 
         ArrayList<SearchResult> matched_documents = new ArrayList<>();
         for (int i = 0; i < tokens.size(); ++i) {
@@ -53,14 +55,30 @@ public class Searcher {
             //ArrayList<SearchResult> result = new ArrayList<SearchResult>();
             if (postings.size() > 1) {
                 for (Posting doc_match : postings.get(min_index).values()) {
+
+
                     //set this variable to true now, we AND it with the boolean variable to determine if all documents contain a valid position
                     boolean found_valid_position_difference = true;
                     boolean doc_missing_from_other_posting_list = false;
                     int j = 0;
                     while (found_valid_position_difference && !doc_missing_from_other_posting_list && j < postings.size()) {
+                        String word = tokens.get(i).getWords().get(j);
+                        Posting doc_in_other_posting = postings.get(j).get(doc_match.doc);
+
+                        if (doc_in_other_posting != null) {
+                            double tf = doc_in_other_posting.positions.size();
+                            double tfIdf = tf * getIdf(word);
+
+                            if (!documentVectors.containsKey(doc_match.doc)) {
+                                DocumentVector vector = new DocumentVector(queryLength);
+                                documentVectors.put(doc_match.doc, vector);
+                            }
+
+                            documentVectors.get(doc_match.doc).getTfIdfs().set(tokenizer.getTokens().get(i).getFirstWordIndex() + j, tfIdf);
+                        }
+
                         //make sure we don't compare against the smallest posting list because thats what we're iterating over
                         if (j != min_index) {
-                            Posting doc_in_other_posting = postings.get(j).get(doc_match.doc);
                             if (null != doc_in_other_posting) {
                                 //Assumes posting stores words position in an ordered array
                                 //Since we parse a document in order, this should remain a valid assumption
@@ -96,27 +114,46 @@ public class Searcher {
                         ++j;
                     }
                     if (found_valid_position_difference) {
-                        matched_documents.add(convertPostToSearchResult(doc_match));
+                        matched_documents.add(convertPostToSearchResult(doc_match, documentVectors.get(doc_match.doc).dot(queryVector)));
+                        //We lose the word
+                    } else {
+                        documentVectors.remove(doc_match.doc);
                     }
                 }
             }
             else {
-                postings.get(0).forEach((integer, posting) -> {
+                for (Integer docId : postings.get(0).keySet()) {
                     try {
-                        matched_documents.add(convertPostToSearchResult(posting));
+
+                        String word = tokens.get(i).getWords().get(0);
+
+                        double tf = postings.get(0).get(docId).positions.size();
+                        double tfIdf = tf*getIdf(word);
+
+                        if (!documentVectors.containsKey(docId)){
+                            DocumentVector vector = new DocumentVector(queryLength);
+                            documentVectors.put(docId, vector);
+                        }
+
+                        documentVectors.get(docId).getTfIdfs().set(tokenizer.getTokens().get(i).getFirstWordIndex(), tfIdf);
+
+                        matched_documents.add(convertPostToSearchResult(postings.get(0).get(docId), documentVectors.get(docId).dot(queryVector)));
+
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                });
+                }
             }
         }
 
-        return matched_documents;
+        return matched_documents.stream()
+                .sorted((i1, i2) -> i1.getSimilarity() > i2.getSimilarity() ? -1 : 1)
+                .collect(Collectors.toList());
     }
 
-    public SearchResult convertPostToSearchResult(Posting post) throws IOException {
+    public SearchResult convertPostToSearchResult(Posting post, double similarity) throws IOException {
         WebPage webpage = index.getWebPage(post.doc);
-        return new SearchResult(webpage.title, "description", webpage.url);
+        return new SearchResult(webpage.title, "description", webpage.url, similarity);
     }
 
     public List<Double> getQueryTfIdfs(List<String> query) throws IOException {

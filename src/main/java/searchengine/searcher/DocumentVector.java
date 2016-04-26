@@ -1,5 +1,6 @@
 package searchengine.searcher;
 
+import javax.print.Doc;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -24,6 +25,10 @@ public class DocumentVector {
 
     public DocumentVector() {
         this.tfIdfs = new ArrayList<>();
+    }
+
+    public double dot(DocumentVector with) {
+        return dot(this, with);
     }
 
     public static boolean sameLength(DocumentVector a, DocumentVector b) {

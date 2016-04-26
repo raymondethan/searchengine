@@ -5,16 +5,17 @@ package searchengine.searcher;
  */
 public class SearchResult {
     private float pageRank;
-    private float similarity;
+    private double similarity;
 
     private String title;
     private String description;
     private String link;
 
-    public SearchResult(String title, String description, String link) {
+    public SearchResult(String title, String description, String link, double similarity) {
         this.title = title;
         this.description = description;
         this.link = link;
+        this.similarity = similarity;
     }
 
     public String getTitle() {
@@ -41,7 +42,7 @@ public class SearchResult {
         this.link = link;
     }
 
-    public float getSimilarity() {
+    public double getSimilarity() {
         return similarity;
     }
 

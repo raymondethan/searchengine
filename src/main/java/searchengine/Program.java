@@ -42,7 +42,7 @@ public class Program {
 //        index.printAll();
 
         Searcher search = new Searcher(index);
-        List<SearchResult> result = search.search("search");
+        List<SearchResult> result = search.search("hkust \"pg admission\"");
         result.forEach(searchResult -> System.out.println(searchResult.getLink()));
         System.out.println("finished search");
     }
