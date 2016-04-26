@@ -7,11 +7,13 @@ public class SearchResult {
     private float pageRank;
     private double similarity;
 
+    private Integer id;
     private String title;
     private String description;
     private String link;
 
-    public SearchResult(String title, String description, String link, double similarity) {
+    public SearchResult(Integer id, String title, String description, String link, double similarity) {
+        this.id = id;
         this.title = title;
         this.description = description;
         this.link = link;
@@ -46,7 +48,7 @@ public class SearchResult {
         return similarity;
     }
 
-    public void setSimilarity(float similarity) {
+    public void setSimilarity(double similarity) {
         this.similarity = similarity;
     }
 
@@ -56,5 +58,9 @@ public class SearchResult {
 
     public void setPageRank(float pageRank) {
         this.pageRank = pageRank;
+    }
+
+    public Integer getId() {
+        return id;
     }
 }

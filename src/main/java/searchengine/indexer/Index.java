@@ -64,7 +64,7 @@ public class Index {
         Integer wordId = wordIndex.tryGetId(word);
         if (wordId == null) return new ArrayList<>();
 
-        return getDoc(wordId);
+        return getTitleDoc(wordId);
     }
 
     public List<Posting> getTitleDoc(int wordId) throws IOException {
@@ -124,6 +124,7 @@ public class Index {
 
     public double idf(String word) throws IOException {
         Integer id = wordIndex.tryGetId(word);
+        if (id == null) return 0;
         return idf(id);
     }
 
@@ -136,7 +137,8 @@ public class Index {
 
     public double titleIdf(String word) throws IOException {
         Integer id = wordIndex.tryGetId(word);
-        return idf(id);
+        if (id == null) return 0;
+        return titleIdf(id);
     }
 
     public double titleIdf(Integer wordId) throws IOException {

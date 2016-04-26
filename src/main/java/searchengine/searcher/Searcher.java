@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
+import java.util.stream.Stream;
 import searchengine.crawler.WebPage;
 import searchengine.indexer.Index;
 import searchengine.indexer.Posting;
@@ -15,9 +15,9 @@ import searchengine.indexer.Posting;
  *
  */
 public class Searcher {
+    public static final int titleWeighting = 5;
 
     private Index index;
-    private Map<String, Double> idfs = new HashMap<>();
 
     public Searcher(Index index) {
         this.index = index;
@@ -25,12 +25,31 @@ public class Searcher {
 
     public List<SearchResult> search(String query) throws IOException {
         Tokenizer tokenizer = new Tokenizer(query);
-        List<Token> tokens = tokenizer.getTokens();
 
-        DocumentVector queryVector = new DocumentVector(getQueryTfIdfs(tokenizer.allWords()));
+        List<SearchResult> bodyResults = getResults(tokenizer, index::idf, index::getDoc);
+        List<SearchResult> titleResults = getResults(tokenizer, index::titleIdf, index::getTitleDoc);
+
+        Stream<SearchResult> results = mergeResults(titleResults, bodyResults);
+
+        return results
+                .sorted((i1, i2) -> i1.getSimilarity() > i2.getSimilarity() ? -1 : 1)
+                .collect(Collectors.toList());
+    }
+
+    public List<SearchResult> getResults(Tokenizer tokenizer, IOExceptingFunction<String, Double> idfFetcher, IOExceptingFunction<String, List<Posting>> docFetcher) throws IOException {
+        //Cache for word idfs
+        Map<String, Double> idfCache = new HashMap<>();
+
+        //Vector representing the query
+        DocumentVector queryVector = new DocumentVector(getQueryTfIdfs(tokenizer.allWords(), idfCache, idfFetcher));
+        //Vectors representing all matching documents
         Map<Integer, DocumentVector> documentVectors = new HashMap<>();
 
-        int queryLength = tokenizer.allWords().size();
+        //The number of terms in the query
+        int queryLength = queryVector.dimensions();
+
+        //All the tokens in the query
+        List<Token> tokens = tokenizer.getTokens();
 
         ArrayList<SearchResult> matched_documents = new ArrayList<>();
         for (int i = 0; i < tokens.size(); ++i) {
@@ -42,7 +61,8 @@ public class Searcher {
                 postings.add(matched);
                 String word = tokens.get(i).getWords().get(j);
                 //get all of the docs matching the word in the phrase
-                List<Posting> docs = index.getDoc(word);
+                List<Posting> docs = docFetcher.apply(word);
+                if (docs == null) continue;
                 //get the size so we can filter based on the smallest number of matched documents
                 if (-1 == min_size || docs.size() < min_size) {
                     min_size = docs.size();
@@ -67,7 +87,7 @@ public class Searcher {
 
                         if (doc_in_other_posting != null) {
                             double tf = doc_in_other_posting.positions.size();
-                            double tfIdf = tf * getIdf(word);
+                            double tfIdf = tf * getIdf(word, idfCache, idfFetcher);
 
                             if (!documentVectors.containsKey(doc_match.doc)) {
                                 DocumentVector vector = new DocumentVector(queryLength);
@@ -120,63 +140,74 @@ public class Searcher {
             }
             else {
                 for (Integer docId : postings.get(0).keySet()) {
-                    try {
 
-                        String word = tokens.get(i).getWords().get(0);
+                    String word = tokens.get(i).getWords().get(0);
 
-                        double tf = postings.get(0).get(docId).positions.size();
-                        double tfIdf = tf*getIdf(word);
+                    double tf = postings.get(0).get(docId).positions.size();
+                    double tfIdf = tf * getIdf(word, idfCache, idfFetcher);
 
-                        if (!documentVectors.containsKey(docId)){
-                            DocumentVector vector = new DocumentVector(queryLength);
-                            documentVectors.put(docId, vector);
-                        }
-
-                        documentVectors.get(docId).getTfIdfs().set(tokenizer.getTokens().get(i).getFirstWordIndex(), tfIdf);
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    if (!documentVectors.containsKey(docId)) {
+                        DocumentVector vector = new DocumentVector(queryLength);
+                        documentVectors.put(docId, vector);
                     }
+
+                    documentVectors.get(docId).getTfIdfs().set(tokenizer.getTokens().get(i).getFirstWordIndex(), tfIdf);
                 }
             }
         }
 
         for (Integer key : documentVectors.keySet()) {
             DocumentVector vector = documentVectors.get(key);
-            double similarity = vector.cosineDistance(queryVector);
+            double similarity = vector.dot(queryVector);
 
             matched_documents.add(getSearchResult(key, similarity));
         }
 
-        return matched_documents.stream()
-                .sorted((i1, i2) -> i1.getSimilarity() > i2.getSimilarity() ? -1 : 1)
-                .collect(Collectors.toList());
+        return matched_documents;
     }
 
     public SearchResult getSearchResult(int id, double similarity) throws IOException {
         WebPage webPage = index.getWebPage(id);
-        return new SearchResult(webPage.title, "description", webPage.url, similarity);
+        return new SearchResult(id, webPage.title, "description", webPage.url, similarity);
     }
 
-    public SearchResult convertPostToSearchResult(Posting post, double similarity) throws IOException {
-        WebPage webpage = index.getWebPage(post.doc);
-        return new SearchResult(webpage.title, "description", webpage.url, similarity);
-    }
-
-    public List<Double> getQueryTfIdfs(List<String> query) throws IOException {
+    public List<Double> getQueryTfIdfs(List<String> query, Map<String, Double> cache, IOExceptingFunction<String, Double> fetcher) throws IOException {
         List<Double> idfs = new ArrayList<Double>();
         for (String word : query) {
-            idfs.add(query.stream().filter(w -> w.equals(word)).count() * getIdf(word));
+            idfs.add(query.stream().filter(w -> w.equals(word)).count() * getIdf(word, cache, fetcher));
         }
         return idfs;
     }
 
-    private double getIdf(String word) throws IOException {
-        if (idfs.containsKey(word)) return idfs.get(word);
+    private double getIdf(String word, Map<String, Double> cache, IOExceptingFunction<String, Double> fetcher) throws IOException {
+        if (cache.containsKey(word)) return cache.get(word);
 
-        double idf = index.idf(word);
-        idfs.put(word, idf);
+        double idf = fetcher.apply(word);
+        cache.put(word, idf);
 
         return idf;
     }
 
+    public Stream<SearchResult> mergeResults(List<SearchResult> titleResults, List<SearchResult> bodyResults) {
+        Map<Integer, SearchResult> results = new HashMap<>(titleResults.size() + bodyResults.size());
+
+        for (SearchResult result : bodyResults) {
+            results.put(result.getId(), result);
+        }
+
+        for (SearchResult result : titleResults){
+            double similarity = result.getSimilarity()*titleWeighting;
+
+            if (results.containsKey(result.getId())) {
+                similarity += results.get(result.getId()).getSimilarity();
+                result.setSimilarity(similarity);
+            }
+
+            results.put(result.getId(), result);
+        }
+
+        return results
+                .values()
+                .stream();
+    }
 }

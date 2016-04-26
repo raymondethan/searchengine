@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.apache.http.config.SocketConfig;
@@ -81,8 +82,14 @@ public class TestServer {
         });
     }
 
-    private static List getResults(String query) throws IOException {
-        List<SearchResult> results = searcher.search(query);
+    private static List getResults(String query) {
+        List<SearchResult> results = new ArrayList<>();
+
+        try {
+            results = searcher.search(query);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return results;
     }
 }

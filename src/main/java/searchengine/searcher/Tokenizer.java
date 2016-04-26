@@ -13,6 +13,7 @@ public class Tokenizer {
     private StopStem stopStem = new StopStem("stopwords.txt");
 
     private String query;
+    private List<String> allwords = new ArrayList<>();
     private List<Token> tokens = new ArrayList<>();
 
     private StringBuilder currentWord = new StringBuilder();
@@ -20,7 +21,6 @@ public class Tokenizer {
     private boolean inPhrase = false;
 
     private int query_word_index = 0;
-    private int spaces = 0;
 
     public Tokenizer(String query) {
         this.query = query;
@@ -49,10 +49,6 @@ public class Tokenizer {
                 addWord();
             }else  {
                 currentWord.append(query.charAt(i));
-            }
-
-            if (query.charAt(i) == ' ') {
-                spaces++;
             }
         }
 
@@ -96,7 +92,9 @@ public class Tokenizer {
         //Don't add tokens with no words
         if (currentToken.getWords().size() == 0) return;
 
-        currentToken.setFirstWordIndex(spaces - currentToken.getWords().size() + 1);
+        currentToken.setFirstWordIndex(allwords.size());
+        allwords.addAll(currentToken.getWords());
+
         tokens.add(currentToken);
 
         currentToken = new Token();
