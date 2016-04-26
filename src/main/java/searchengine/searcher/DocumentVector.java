@@ -80,6 +80,10 @@ public class DocumentVector {
         return dot(a, b)/(a.length()*b.length());
     }
 
+    public double cosineDistance(DocumentVector to) {
+        return cosineDistance(this, to);
+    }
+
     public double dot(DocumentVector with) {
         return dot(this, with);
     }

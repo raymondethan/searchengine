@@ -142,7 +142,7 @@ public class Searcher {
 
         for (Integer key : documentVectors.keySet()) {
             DocumentVector vector = documentVectors.get(key);
-            double similarity = vector.dot(queryVector);
+            double similarity = vector.cosineDistance(queryVector);
 
             matched_documents.add(getSearchResult(key, similarity));
         }
