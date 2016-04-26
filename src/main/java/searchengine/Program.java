@@ -1,27 +1,20 @@
 package searchengine;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
-
 import searchengine.crawler.Crawler;
 import searchengine.indexer.Index;
-import searchengine.indexer.InvertedIndex;
 import searchengine.pagerank.PageRank;
 import searchengine.searcher.SearchResult;
 import searchengine.searcher.Searcher;
-import searchengine.searcher.Token;
-import searchengine.searcher.Tokenizer;
 
 /**
  * The main entry point for the program
  */
 public class Program {
     public static void main(String[] args) throws IOException {
-        Crawler crawler = new Crawler("http://www.cse.ust.hk/~ericzhao/COMP4321/TestPages/testpage.htm", 30);
+        Crawler crawler = new Crawler("http://www.cse.ust.hk/~ericzhao/COMP4321/TestPages/testpage.htm", 300);
 
         try {
             crawler.begin();

@@ -1,4 +1,4 @@
-/*package searchengine.site;
+package searchengine.site;
 
 import com.google.gson.Gson;
 import java.io.File;
@@ -15,12 +15,10 @@ import org.apache.http.impl.bootstrap.ServerBootstrap;
 import searchengine.indexer.Index;
 import searchengine.searcher.SearchResult;
 import searchengine.searcher.Searcher;
-import searchengine.searcher.Tokenizer;
 
 /**
  *
  */
-/*
 public class TestServer {
     private static Searcher searcher;
     public static void main(String[] args) throws IOException {
@@ -85,9 +83,6 @@ public class TestServer {
 
     private static List getResults(String query) throws IOException {
         List<SearchResult> results = searcher.search(query);
-
-        Tokenizer tokenizer = new Tokenizer(query);
-        return tokenizer.allWords();
+        return results;
     }
 }
-*/

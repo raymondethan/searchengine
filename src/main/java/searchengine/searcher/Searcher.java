@@ -1,15 +1,10 @@
 package searchengine.searcher;
 
-import com.sun.tools.classfile.Opcode;
-import com.sun.tools.javac.code.Attribute;
-import com.sun.tools.javac.parser.Tokens;
-import searchengine.crawler.WebPage;
-import searchengine.indexer.Index;
-import searchengine.indexer.Posting;
-
 import java.io.IOException;
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import searchengine.crawler.WebPage;
 import searchengine.indexer.Index;
 import searchengine.indexer.Posting;
 
@@ -66,7 +61,7 @@ public class Searcher {
                                 //now we have to iterate through the list of word occurances to verify that the words in each posting occur in the same order as in the query
                                 while (!doc_contains_valid_position && doc_match_index < doc_match.positions.size() && other_doc_index < doc_in_other_posting.positions.size()) {
 
-                                    int calculated_position_difference = doc_match.positions.get(doc_match_index) - doc_in_other_posting.positions.get(other_doc_index);;
+                                    int calculated_position_difference = doc_match.positions.get(doc_match_index) - doc_in_other_posting.positions.get(other_doc_index);
                                     //min_index is the position of doc_match's word in the posting list and query
                                     //j is the position of the other doc's word in the posting list and query
                                     int needed_position_difference = tokens.get(i).getPositions().get(min_index) - tokens.get(i).getPositions().get(j);
