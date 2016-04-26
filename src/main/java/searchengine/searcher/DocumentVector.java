@@ -10,6 +10,14 @@ import java.util.stream.Stream;
 public class DocumentVector {
     private List<Double> tfIdfs;
 
+    public DocumentVector(int length) {
+        List<Double> tfIdfs = new ArrayList<>();
+        for (int i = 0; i < length; ++i)
+            tfIdfs.add(0.0);
+
+        this.tfIdfs = tfIdfs;
+    }
+
     public DocumentVector(List<Double> tfIdfs) {
         this.tfIdfs = tfIdfs;
     }

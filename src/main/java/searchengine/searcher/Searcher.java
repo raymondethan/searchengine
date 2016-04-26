@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import searchengine.crawler.WebPage;
 import searchengine.indexer.Index;
 import searchengine.indexer.Posting;
@@ -14,6 +15,7 @@ import searchengine.indexer.Posting;
 public class Searcher {
 
     private Index index;
+    private Map<String, Double> idfs = new HashMap<>();
 
     public Searcher(Index index) {
         this.index = index;
@@ -23,7 +25,12 @@ public class Searcher {
         Tokenizer tokenizer = new Tokenizer(query);
         List<Token> tokens = tokenizer.getTokens();
 
-        ArrayList<SearchResult> matched_documents = new ArrayList<SearchResult>();
+        DocumentVector queryVector = new DocumentVector(getQueryTfIdfs(tokenizer.allWords()));
+        Map<Integer, DocumentVector> documentVectors = new HashMap<>();
+
+        int wordsSoFar = 0;
+
+        ArrayList<SearchResult> matched_documents = new ArrayList<>();
         for (int i = 0; i < tokens.size(); ++i) {
             int min_index = 0;
             int min_size = -1;
@@ -115,9 +122,18 @@ public class Searcher {
     public List<Double> getQueryTfIdfs(List<String> query) throws IOException {
         List<Double> idfs = new ArrayList<Double>();
         for (String word : query) {
-            idfs.add(query.stream().filter(w -> w.equals(word)).count() * index.idf(word));
+            idfs.add(query.stream().filter(w -> w.equals(word)).count() * getIdf(word));
         }
         return idfs;
+    }
+
+    private double getIdf(String word) throws IOException {
+        if (idfs.containsKey(word)) return idfs.get(word);
+
+        double idf = index.idf(word);
+        idfs.put(word, idf);
+
+        return idf;
     }
 
 }
