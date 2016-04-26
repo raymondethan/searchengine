@@ -1,6 +1,5 @@
 package searchengine.searcher;
 
-import javax.print.Doc;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -27,10 +26,6 @@ public class DocumentVector {
         this.tfIdfs = new ArrayList<>();
     }
 
-    public double dot(DocumentVector with) {
-        return dot(this, with);
-    }
-
     public static boolean sameLength(DocumentVector a, DocumentVector b) {
         return a.tfIdfs.size() == b.tfIdfs.size();
     }
@@ -38,7 +33,14 @@ public class DocumentVector {
     public static DocumentVector div(DocumentVector a, DocumentVector b) {
         DocumentVector result = new DocumentVector();
         for (int i = 0; i < a.tfIdfs.size(); ++i)
-            result.tfIdfs.add(a.tfIdfs.get(i) * b.tfIdfs.get(i));
+            result.tfIdfs.add(a.tfIdfs.get(i) / b.tfIdfs.get(i));
+        return result;
+    }
+
+    public static DocumentVector div(DocumentVector a, double b) {
+        DocumentVector result = new DocumentVector();
+        for (int i = 0; i < a.tfIdfs.size(); ++i)
+            result.tfIdfs.add(a.tfIdfs.get(i) / b);
         return result;
     }
 
@@ -78,6 +80,10 @@ public class DocumentVector {
         return dot(a, b)/(a.length()*b.length());
     }
 
+    public double dot(DocumentVector with) {
+        return dot(this, with);
+    }
+
     public double get(int dimension) {
         return tfIdfs.get(dimension);
     }
@@ -105,6 +111,7 @@ public class DocumentVector {
     public DocumentVector div(DocumentVector a) {
         return div(this, a);
     }
+    public DocumentVector div(double b) {return div(this, b);}
 
     public DocumentVector mul(DocumentVector a) {
         return mul(this, a);
@@ -112,6 +119,9 @@ public class DocumentVector {
 
     public DocumentVector sub(DocumentVector a) {
         return sub(this, a);
+    }
+    public DocumentVector normalize(DocumentVector a) {
+        return a.div(a.length());
     }
 
     public DocumentVector add(DocumentVector a) {
