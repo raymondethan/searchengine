@@ -60,7 +60,7 @@ public class Searcher {
                 HashMap<Integer, Posting> matched = new HashMap<>();
                 postings.add(matched);
                 String word = tokens.get(i).getWords().get(j);
-                //get all of the docs matching the word in the phrase
+                //get all f the docs matching the word in the phrase
                 List<Posting> docs = docFetcher.apply(word);
                 if (docs == null) continue;
                 //get the size so we can filter based on the smallest number of matched documents
