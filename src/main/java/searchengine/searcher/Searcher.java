@@ -20,7 +20,9 @@ public class Searcher {
     }
 
     public List<SearchResult> search(String query) throws IOException {
-        List<Token> tokens = new Tokenizer(query).getTokens();
+        Tokenizer tokenizer = new Tokenizer(query);
+        List<Token> tokens = tokenizer.getTokens();
+
         ArrayList<SearchResult> matched_documents = new ArrayList<SearchResult>();
         for (int i = 0; i < tokens.size(); ++i) {
             int min_index = 0;

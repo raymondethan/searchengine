@@ -8,7 +8,15 @@ import java.util.stream.Stream;
  *
  */
 public class DocumentVector {
-    private List<Double> tfIdfs = new ArrayList<>();
+    private List<Double> tfIdfs;
+
+    public DocumentVector(List<Double> tfIdfs) {
+        this.tfIdfs = tfIdfs;
+    }
+
+    public DocumentVector() {
+        this.tfIdfs = new ArrayList<>();
+    }
 
     public static boolean sameLength(DocumentVector a, DocumentVector b) {
         return a.tfIdfs.size() == b.tfIdfs.size();
