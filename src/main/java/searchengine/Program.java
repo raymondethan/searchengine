@@ -14,7 +14,7 @@ import searchengine.searcher.Searcher;
  */
 public class Program {
     public static void main(String[] args) throws IOException {
-        Crawler crawler = new Crawler("http://www.cse.ust.hk/~ericzhao/COMP4321/TestPages/testpage.htm", 300);
+        Crawler crawler = new Crawler("http://www.cse.ust.hk/~ericzhao/COMP4321/TestPages/testpage.htm", 30);
 
         try {
             crawler.begin();
