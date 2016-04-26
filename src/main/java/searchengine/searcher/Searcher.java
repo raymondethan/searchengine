@@ -113,10 +113,7 @@ public class Searcher {
                         }
                         ++j;
                     }
-                    if (found_valid_position_difference) {
-                        matched_documents.add(convertPostToSearchResult(doc_match, documentVectors.get(doc_match.doc).dot(queryVector)));
-                        //We lose the word
-                    } else {
+                    if (!found_valid_position_difference)  {
                         documentVectors.remove(doc_match.doc);
                     }
                 }
@@ -136,9 +133,6 @@ public class Searcher {
                         }
 
                         documentVectors.get(docId).getTfIdfs().set(tokenizer.getTokens().get(i).getFirstWordIndex(), tfIdf);
-
-                        matched_documents.add(convertPostToSearchResult(postings.get(0).get(docId), documentVectors.get(docId).dot(queryVector)));
-
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -146,9 +140,21 @@ public class Searcher {
             }
         }
 
+        for (Integer key : documentVectors.keySet()) {
+            DocumentVector vector = documentVectors.get(key);
+            double similarity = vector.dot(queryVector);
+
+            matched_documents.add(getSearchResult(key, similarity));
+        }
+
         return matched_documents.stream()
                 .sorted((i1, i2) -> i1.getSimilarity() > i2.getSimilarity() ? -1 : 1)
                 .collect(Collectors.toList());
+    }
+
+    public SearchResult getSearchResult(int id, double similarity) throws IOException {
+        WebPage webPage = index.getWebPage(id);
+        return new SearchResult(webPage.title, "description", webPage.url, similarity);
     }
 
     public SearchResult convertPostToSearchResult(Posting post, double similarity) throws IOException {
