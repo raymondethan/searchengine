@@ -112,6 +112,12 @@ public class Searcher {
         return new SearchResult(webpage.title, "description", webpage.url);
     }
 
-
+    public List<Double> getQueryTfIdfs(List<String> query) throws IOException {
+        List<Double> idfs = new ArrayList<Double>();
+        for (String word : query) {
+            idfs.add(query.stream().filter(w -> w.equals(word)).count() * index.idf(word));
+        }
+        return idfs;
+    }
 
 }

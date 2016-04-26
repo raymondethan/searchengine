@@ -30,7 +30,7 @@ public class TestServer {
                 .build();
 
         final HttpServer server = ServerBootstrap.bootstrap()
-                .setListenerPort(80)
+                .setListenerPort(8080)
                 .setServerInfo("A magical test server")
                 .setSocketConfig(config)
                 .setExceptionLogger(e -> {

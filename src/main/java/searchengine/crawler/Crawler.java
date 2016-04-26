@@ -100,7 +100,6 @@ public class Crawler {
                 if (-1 == size) {
                     size = pageParser.size_default;
                 }
-                System.out.println(currDocId);
                 //Add the page to the docIndex
                 index.insertIntoDocIndex(currDocId, current, lastModified, size, title);
 
