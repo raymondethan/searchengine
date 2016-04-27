@@ -11,13 +11,20 @@ public class SearchResult {
     private String title;
     private String description;
     private String link;
+    private String lastModified;
+    private int size;
+    private String topWordCounts;
 
-    public SearchResult(Integer id, String title, String description, String link, double similarity) {
+    public SearchResult(Integer id, String title, String description, String link, double similarity, String lastModified, int size, String topWordCounts) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.link = link;
         this.similarity = similarity;
+        this.lastModified = lastModified;
+        this.size = size;
+        this.topWordCounts = topWordCounts;
+
     }
 
     public String getTitle() {
@@ -63,4 +70,8 @@ public class SearchResult {
     public Integer getId() {
         return id;
     }
+
+    public String getLastModified() { return lastModified; }
+
+    public int getSize() { return size; }
 }

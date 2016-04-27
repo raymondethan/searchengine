@@ -6,6 +6,7 @@ import searchengine.indexer.Index;
 
 import java.io.IOException;
 import java.util.*;
+import searchengine.Settings;
 
 /**
  * Created by ethanraymond on 4/24/16.
@@ -19,7 +20,8 @@ public class PageRank {
 
     public PageRank(Index index) throws IOException {
         this.index=index;
-        frontier.add(index.getDocId("http://www.cse.ust.hk/~ericzhao/COMP4321/TestPages/testpage.htm"));
+        Settings settings = new Settings();
+        frontier.add(index.getDocId(settings.startUrl));
     }
 
 

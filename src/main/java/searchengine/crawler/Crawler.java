@@ -137,6 +137,7 @@ public class Crawler {
 
                     index.addEntry(stemmed, current, i);
                 }
+                index.addWordToDocContent(currDocId, words.get(i));
             }
         }
         System.out.println();

@@ -13,6 +13,7 @@ import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.bootstrap.HttpServer;
 import org.apache.http.impl.bootstrap.ServerBootstrap;
+import searchengine.Settings;
 import searchengine.indexer.Index;
 import searchengine.searcher.SearchResult;
 import searchengine.searcher.Searcher;
@@ -22,8 +23,9 @@ import searchengine.searcher.Searcher;
  */
 public class Server {
     private static Searcher searcher;
+    private static Settings settings = new Settings();
     public static void main(String[] args) throws IOException {
-        startServer(8080);
+        startServer(settings.port);
     }
 
     public static void startServer(int port) throws IOException {

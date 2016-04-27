@@ -18,6 +18,7 @@ public class Index {
     private static final String TITLE_IDF_NAME = "title_idfs";
     private static final String BODY_INDEX_NAME = "body_index";
     private static final String TITLE_INDEX_NAME = "title_index";
+    private static final String DOC_CONTENT_INDEX_NAME = "content_index";
 
     private static final String DOCIDINDEX_NAME = "docIdIndex";
     private static final int MAX_TERMS_PRINTED = 5;
@@ -31,6 +32,7 @@ public class Index {
     private LinkIndex linkIndex;
     private DocumentWordCounts wordCountIndex;
     private DocumentIndex docIdIndex;
+    private DocContentIndex docContentIndex;
 
     private RecordManager recman;
 
@@ -47,6 +49,8 @@ public class Index {
         wordCountIndex = new DocumentWordCounts(recman);
         bodyInverseDocumentFrequencies = new InverseDocumentFrequencies(BODY_IDF_NAME, recman);
         titleInverseDocumentFrequencies = new InverseDocumentFrequencies(TITLE_IDF_NAME, recman);
+
+        docContentIndex = new DocContentIndex(DOC_CONTENT_INDEX_NAME, recman);
     }
 
     public List<Posting> getDoc(String word) throws IOException {
@@ -93,6 +97,15 @@ public class Index {
         bodyInverseDocumentFrequencies.addDocument(wordId, docId);
     }
 
+    public void addWordToDocContent(int docId, String word) throws IOException {
+        int wordId = wordIndex.getId(word);
+        docContentIndex.addWord(docId, wordId);
+    }
+
+    public ArrayList<Integer> getDescription(int docId, int position) throws IOException {
+        return docContentIndex.getDescription(docId, position);
+    }
+
     public void addTitleEntry(String title, String url, int pos) throws IOException {
         int docId = linkIndex.getId(url);
         int wordId = wordIndex.getId(title);
@@ -109,6 +122,10 @@ public class Index {
 
     public Integer tryGetWordId(String word) throws IOException {
         return wordIndex.tryGetId(word);
+    }
+
+    public String getWord(Integer wordId) throws IOException {
+        return wordIndex.get(wordId);
     }
 
     //Get the docId of a given link so we can pass it into insertIntoDocInex
@@ -174,6 +191,10 @@ public class Index {
 
     public List<String> getParents(Integer docId) throws IOException {
         return linkIndex.getParents(docId);
+    }
+
+    public Map getWordCounts(int docId) throws IOException {
+        return wordCountIndex.getWordCounts(docId);
     }
 
     public void printAll(PrintStream stream) throws IOException {

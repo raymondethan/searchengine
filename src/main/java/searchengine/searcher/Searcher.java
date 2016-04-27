@@ -1,12 +1,11 @@
 package searchengine.searcher;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import searchengine.Settings;
 import searchengine.crawler.WebPage;
 import searchengine.indexer.Index;
 import searchengine.indexer.Posting;
@@ -18,9 +17,11 @@ public class Searcher {
     public static final int titleWeighting = 5;
 
     private Index index;
+    private Settings settings;
 
     public Searcher(Index index) {
         this.index = index;
+        this.settings = new Settings();
     }
 
     public List<SearchResult> search(String query) throws IOException {
@@ -44,6 +45,8 @@ public class Searcher {
         DocumentVector queryVector = new DocumentVector(getQueryTfIdfs(tokenizer.allWords(), idfCache, idfFetcher));
         //Vectors representing all matching documents
         Map<Integer, DocumentVector> documentVectors = new HashMap<>();
+
+        Map<Integer,Integer> docPositionMatches = new HashMap<>();
 
         //The number of terms in the query
         int queryLength = queryVector.dimensions();
@@ -81,6 +84,7 @@ public class Searcher {
                     boolean found_valid_position_difference = true;
                     boolean doc_missing_from_other_posting_list = false;
                     int j = 0;
+                    int position_of_match = 0;
                     while (found_valid_position_difference && !doc_missing_from_other_posting_list && j < postings.size()) {
                         String word = tokens.get(i).getWords().get(j);
                         Posting doc_in_other_posting = postings.get(j).get(doc_match.doc);
@@ -115,6 +119,8 @@ public class Searcher {
 
                                     if (calculated_position_difference == needed_position_difference) {
                                         doc_contains_valid_position = true;
+                                        //just put doc_match_index for now, we can try to improve this later
+                                        docPositionMatches.put(doc_match.doc,doc_match_index);
                                     }
                                     //efficiently iterate through the position arrays of each posting
                                     else if (calculated_position_difference > needed_position_difference) {
@@ -135,6 +141,7 @@ public class Searcher {
                     }
                     if (!found_valid_position_difference)  {
                         documentVectors.remove(doc_match.doc);
+                        docPositionMatches.remove(doc_match.doc);
                     }
                 }
             }
@@ -143,12 +150,19 @@ public class Searcher {
 
                     String word = tokens.get(i).getWords().get(0);
 
-                    double tf = postings.get(0).get(docId).positions.size();
+                    ArrayList<Integer> positions = postings.get(0).get(docId).positions;
+
+                    double tf = positions.size();
                     double tfIdf = tf * getIdf(word, idfCache, idfFetcher);
 
                     if (!documentVectors.containsKey(docId)) {
                         DocumentVector vector = new DocumentVector(queryLength);
                         documentVectors.put(docId, vector);
+                    }
+
+                    //get word match location, we will use the first match in the document
+                    if (!docPositionMatches.containsKey(docId)) {
+                        docPositionMatches.put(docId, positions.get(0));
                     }
 
                     documentVectors.get(docId).getTfIdfs().set(tokenizer.getTokens().get(i).getFirstWordIndex(), tfIdf);
@@ -160,15 +174,42 @@ public class Searcher {
             DocumentVector vector = documentVectors.get(key);
             double similarity = vector.dot(queryVector);
 
-            matched_documents.add(getSearchResult(key, similarity));
+            //Pass in first position for now
+
+            matched_documents.add(getSearchResult(key, similarity, docPositionMatches.get(key)));
         }
 
         return matched_documents;
     }
 
-    public SearchResult getSearchResult(int id, double similarity) throws IOException {
+    public SearchResult getSearchResult(int id, double similarity, int match_position) throws IOException {
         WebPage webPage = index.getWebPage(id);
-        return new SearchResult(id, webPage.title, "description", webPage.url, similarity);
+        String topWordCounts = getTopWordCounts(index.getWordCounts(id));
+        return new SearchResult(id, webPage.title, getDescription(id, match_position), webPage.url, similarity, webPage.lastModified.toString(), webPage.size, topWordCounts);
+    }
+
+    private String getTopWordCounts(Map wordCountMap) {
+
+        //Possible for links we haven't scraped but have assigned an id to
+        if (wordCountMap == null) return "";
+
+        //Print out the top 5 most frequent terms
+        String wordCounts = "";
+        Set<Map.Entry<String, Integer>> set = wordCountMap.entrySet();
+        List<Map.Entry<String, Integer>> list = new ArrayList<Map.Entry<String, Integer>>(
+                set);
+        Collections.sort(list, new Comparator<Map.Entry<String, Integer>>() {
+            @Override
+            public int compare(Map.Entry<String, Integer> o1,
+                               Map.Entry<String, Integer> o2) {
+
+                return o2.getValue().compareTo(o1.getValue());
+            }
+        });
+        for (int i = 0; i < Math.min(settings.maxTermsPrinted, list.size()); ++i) {
+            wordCounts += list.get(i).toString().replace("="," ") + "; ";
+        }
+        return wordCounts;
     }
 
     public List<Double> getQueryTfIdfs(List<String> query, Map<String, Double> cache, IOExceptingFunction<String, Double> fetcher) throws IOException {
@@ -210,4 +251,17 @@ public class Searcher {
                 .values()
                 .stream();
     }
+
+    public String getDescription(int docId, int position) throws IOException {
+        ArrayList<Integer> words = index.getDescription(docId, position);
+        String description = "";
+        for (Integer wordId : words) {
+            description += (index.getWord(wordId)) + " ";
+        }
+        return description;
+    }
+
+//    public Stream<SearchResult> addDescriptions(Stream<SearchResult> results) {
+//        results.forEach(searchResult -> searchResult.setDescription());
+//    }
 }
