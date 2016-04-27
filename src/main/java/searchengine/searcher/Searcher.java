@@ -37,6 +37,8 @@ public class Searcher {
                 .collect(Collectors.toList());
     }
 
+    //TODO: "popular results" works but popular results does not
+    //It got a lot slower for some queries, WHY????
     public List<SearchResult> getResults(Tokenizer tokenizer, IOExceptingFunction<String, Double> idfFetcher, IOExceptingFunction<String, List<Posting>> docFetcher) throws IOException {
         //Cache for word idfs
         Map<String, Double> idfCache = new HashMap<>();
