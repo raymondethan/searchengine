@@ -1,5 +1,7 @@
 package searchengine.searcher;
 
+import java.util.List;
+
 /**
  * A class containing pertinent information about a search result
  */
@@ -14,8 +16,10 @@ public class SearchResult {
     private String lastModified;
     private int size;
     private String topWordCounts;
+    private List<String> parentLinks;
+    private List<String> childLinks;
 
-    public SearchResult(Integer id, String title, String description, String link, double similarity, String lastModified, int size, String topWordCounts) {
+    public SearchResult(Integer id, String title, String description, String link, double similarity, String lastModified, int size, String topWordCounts, List<String> parentLinksList, List<String> childLinksList) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -24,6 +28,8 @@ public class SearchResult {
         this.lastModified = lastModified;
         this.size = size;
         this.topWordCounts = topWordCounts;
+        this.parentLinks = parentLinksList;
+        this.childLinks = childLinksList;
 
     }
 

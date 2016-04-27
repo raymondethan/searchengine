@@ -78,6 +78,11 @@ public class LinkIndex extends BasicIndex<String> {
         return result == null ? new ArrayList<>() : result;
     }
 
+    public List<String> getChildLinks(Integer linkId) throws IOException {
+        List<String> result = (List<String>) childHashTree.get(linkId);
+        return result == null ? new ArrayList<>() : result;
+    }
+
     /**
      * Adds a collection of children to a link
      * @param linkId The link to add the children to

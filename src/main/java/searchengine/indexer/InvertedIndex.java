@@ -53,8 +53,8 @@ public class InvertedIndex
 			boolean docFound = false;
 			for (int i = 0; i < entries.size(); ++i) {
 				Posting element = entries.get(i);
-                element.positions.add(pos);
 				if (element.doc == docId) {
+					element.positions.add(pos);
 					element.freq += 1;
 					docFound = true;
 					break;

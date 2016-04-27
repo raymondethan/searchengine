@@ -193,6 +193,10 @@ public class Index {
         return linkIndex.getParents(docId);
     }
 
+    public List<String> getChildLinks(Integer docId) throws IOException {
+        return linkIndex.getChildLinks(docId);
+    }
+
     public Map getWordCounts(int docId) throws IOException {
         return wordCountIndex.getWordCounts(docId);
     }

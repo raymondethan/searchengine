@@ -185,7 +185,9 @@ public class Searcher {
     public SearchResult getSearchResult(int id, double similarity, int match_position) throws IOException {
         WebPage webPage = index.getWebPage(id);
         String topWordCounts = getTopWordCounts(index.getWordCounts(id));
-        return new SearchResult(id, webPage.title, getDescription(id, match_position), webPage.url, similarity, webPage.lastModified.toString(), webPage.size, topWordCounts);
+        List<String> parentLinksList = index.getParents(id);
+        List<String> childLinksList = index.getChildLinks(id);
+        return new SearchResult(id, webPage.title, getDescription(id, match_position), webPage.url, similarity, webPage.lastModified.toString(), webPage.size, topWordCounts, parentLinksList, childLinksList);
     }
 
     private String getTopWordCounts(Map wordCountMap) {
