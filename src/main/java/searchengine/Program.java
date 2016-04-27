@@ -21,19 +21,19 @@ public class Program {
         final Settings settings = new Settings();
 
         ArgumentsManager.get()
-                .registerArgument("-c", "--crawl", "tells the program it should crawl", opts -> {
+                .registerArgument("c", "crawl", "tells the program it should crawl", opts -> {
                     if (opts.size() > 0){
                     settings.crawlCount = Integer.parseInt(opts.get(0));
                     }
                     settings.shouldCrawl = true;
                 })
-                .registerArgument("-u", "--url", "tells the crawler it's starting url", opts -> {
+                .registerArgument("u", "url", "tells the crawler it's starting url", opts -> {
                     settings.startUrl = opts.get(0);
                 })
-                .registerArgument("-s", "--server", "tells the program it should start as a server", opts -> {
+                .registerArgument("s", "server", "tells the program it should start as a server", opts -> {
                     settings.shouldCrawl = false;
                 })
-                .registerArgument("-p", "--port", "tells the program what port is should use", opts -> {
+                .registerArgument("p", "port", "tells the program what port is should use", opts -> {
                     settings.port = Integer.parseInt(opts.get(0));
                 })
                 .parseArguments(args);
