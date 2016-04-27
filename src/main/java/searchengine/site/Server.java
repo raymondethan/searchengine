@@ -20,9 +20,13 @@ import searchengine.searcher.Searcher;
 /**
  *
  */
-public class TestServer {
+public class Server {
     private static Searcher searcher;
     public static void main(String[] args) throws IOException {
+        startServer(8080);
+    }
+
+    public static void startServer(int port) throws IOException {
         searcher = new Searcher(new Index("inverted_index"));
 
         SocketConfig config = SocketConfig.custom()
@@ -31,7 +35,7 @@ public class TestServer {
                 .build();
 
         final HttpServer server = ServerBootstrap.bootstrap()
-                .setListenerPort(8080)
+                .setListenerPort(port)
                 .setServerInfo("A magical test server")
                 .setSocketConfig(config)
                 .setExceptionLogger(e -> {

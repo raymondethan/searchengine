@@ -4,11 +4,14 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
-
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Set;
+import java.util.Vector;
 import org.htmlparser.util.ParserException;
+import searchengine.Settings;
 import searchengine.indexer.Index;
-import searchengine.indexer.InvertedIndex;
 
 /**
  *
@@ -33,6 +36,12 @@ public class Crawler {
         }
 
         frontier.addLast(startingUrl);
+    }
+
+    public static void main(String[] args) throws IOException, ParseException {
+        Settings settings = new Settings();
+        Crawler crawler = new Crawler(settings.startUrl, settings.crawlCount);
+        crawler.begin();
     }
 
     public void begin() throws IOException, ParseException {
