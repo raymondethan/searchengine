@@ -33,7 +33,7 @@ public class Searcher {
         Stream<SearchResult> results = mergeResults(titleResults, bodyResults);
 
         return results
-                .sorted((i1, i2) -> i1.getSimilarity() > i2.getSimilarity() ? -1 : 1)
+                .sorted((i1,i2) -> Double.compare(i1.getSimilarity(),i2.getSimilarity()))
                 .collect(Collectors.toList());
     }
 

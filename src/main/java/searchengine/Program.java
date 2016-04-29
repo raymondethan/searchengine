@@ -75,7 +75,7 @@ public class Program {
 //        index.printAll();
 
         Searcher search = new Searcher(index);
-        List<SearchResult> result = search.search("hkust \"pg admission\"");
+        List<SearchResult> result = search.search("popular results");
         result.forEach(searchResult -> System.out.println(searchResult.getLink()));
         System.out.println("finished search");
     }

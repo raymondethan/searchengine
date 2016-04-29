@@ -110,8 +110,6 @@ public class PageParser
         }
         this.lastModified = new Date(lm);
         this.size = connection.getContentLength();
-        //System.out.println("Last modified: " + new Date(connection.getLastModified()));
-        //System.out.println("Date: " + new Date(connection.getDate()));
     }
 
     public String extractTitle() throws ParserException {
