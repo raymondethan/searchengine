@@ -243,7 +243,6 @@ public class Searcher {
         for (SearchResult result : bodyResults) {
             results.put(result.getId(), result);
         }
-
         for (SearchResult result : titleResults){
             double similarity = result.getSimilarity()*titleWeighting;
 

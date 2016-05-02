@@ -129,17 +129,21 @@ public class InvertedIndex
     }
 
     private void clearHashTable(HTree tmpHastable, HTree permHashtable) throws IOException {
-        FastIterator iter = permHashtable.keys();
+        FastIterator iter = tmpHashtable.keys();
         Integer key;
+        List<Integer> keys = new ArrayList<Integer>();
 
         while ((key = (Integer) iter.next()) != null) {
-            tmpHastable.remove(key);
+            keys.add(key);
+        }
+        for (Integer wordId : keys) {
+            tmpHastable.remove(wordId);
         }
     }
 
     public void remove(Integer docId) throws IOException {
-        hashtable.remove(docId);
-        tmpHashtable.remove(docId);
+//        hashtable.remove(docId);
+//        tmpHashtable.remove(docId);
     }
 
     public ArrayList<Posting> getDocuments(int wordIndex) throws IOException {

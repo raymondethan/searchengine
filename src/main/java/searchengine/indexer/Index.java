@@ -97,7 +97,7 @@ public class Index {
         bodyInverseDocumentFrequencies.addDocument(wordId, docId);
     }
 
-    public void removeDocument(Integer docId) {
+    public void removeDocument(Integer docId) throws IOException {
         bodyIndex.remove(docId);
         titleIndex.remove(docId);
     }

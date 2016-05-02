@@ -106,6 +106,23 @@ public class Crawler {
                 continue;
             }
 
+            if (title.equals("Led Zeppelin: The Song Remains the Same (1976)")) {
+                int a = 1;
+            }
+
+            //todo: convert the words to lower case?????
+            for (int i = 0; i < words.size(); ++i) {
+                if (!stopStem.isStopWord(words.get(i))) {
+                    String stemmed = stopStem.stem(words.get(i));
+
+                    //Stop getting those empty entries
+                    if (stemmed.isEmpty()) {index.addWordToDocContent(currDocId, words.get(i)); continue;}
+
+                    index.addEntry(stemmed, current, i);
+                }
+                index.addWordToDocContent(currDocId, words.get(i));
+            }
+
             try {
                 //Add all the links to the frontier that we haven't seen already
                 Vector<String> links = pageParser.extractLinks();
@@ -134,17 +151,6 @@ public class Crawler {
             } catch (ParserException e) {
                 e.printStackTrace();
                 continue;
-            }
-            for (int i = 0; i < words.size(); ++i) {
-                if (!stopStem.isStopWord(words.get(i))) {
-                    String stemmed = stopStem.stem(words.get(i));
-
-                    //Stop getting those empty entries
-                    if (stemmed.isEmpty()) continue;
-
-                    index.addEntry(stemmed, current, i);
-                }
-                index.addWordToDocContent(currDocId, words.get(i));
             }
         }
         System.out.println();

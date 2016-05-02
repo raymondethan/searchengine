@@ -78,7 +78,7 @@ public class Program {
 //        index.printAll();
 
         Searcher search = new Searcher(index);
-        List<SearchResult> result = search.search("\"Episode Title Search for \"Dinosaur Planet\"\"");
+        List<SearchResult> result = search.search("dinosaur");
         result.forEach(searchResult -> System.out.println(searchResult.getLink()));
         System.out.println("finished search");
     }
