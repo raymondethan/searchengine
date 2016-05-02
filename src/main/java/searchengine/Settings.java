@@ -9,4 +9,5 @@ public class Settings {
     public boolean shouldCrawl = true;
     public String startUrl = "http://www.cse.ust.hk/~ericzhao/COMP4321/TestPages/testpage.htm";
     public int maxTermsPrinted = 5;
+    public int maxSearchResults = 50;
 }

@@ -34,7 +34,8 @@ public class Searcher {
 
         return results
                 .sorted((i1,i2) -> Double.compare(i1.getSimilarity(),i2.getSimilarity()))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList())
+                .subList(0, settings.maxSearchResults);
     }
 
     //TODO: "popular results" works but popular results does not
