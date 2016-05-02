@@ -67,10 +67,11 @@ public class Program {
 
         System.out.println("Running page rank");
         PageRank pageRanker = new PageRank(index);
-        for (int i = 0; i < settings.pageRankIterations; ++i) {
+        int maxIterations = settings.pageRankIterations;
+        for (int i = 0; i < maxIterations; ++i) {
             pageRanker.rankPages();
         }
-        pageRanker.printPageRanks();
+        //pageRanker.printPageRanks();
 
 //        PrintStream stream = new PrintStream(new FileOutputStream("spider_result.txt"));
 //        index.printAll(stream);

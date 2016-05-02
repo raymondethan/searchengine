@@ -29,13 +29,16 @@ public class PageRank {
     public void rankPages() throws IOException {
         while (frontier.size() > 0 && visited.size() < index.getDocumentCount()) {
             Integer current = frontier.removeFirst();
+            if (visited.contains(current)) continue;
             List<String> parents = index.getParents(current);
             float pagerank = 0;
             for (int i = 0; i < parents.size(); ++i) {
                 WebPage parent = index.getWebPage(parents.get(i));
                 if (null != parent) {
                     pagerank += parent.pagerank / index.getNumChildren(parent.docId);
-                    frontier.addLast(parent.docId);
+                    if (!visited.contains(parent.docId)) {
+                        frontier.addLast(parent.docId);
+                    }
                 }
             }
             pagerank *= DAMPING_FACTOR;

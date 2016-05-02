@@ -16,6 +16,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.htmlparser.Node;
 import org.htmlparser.NodeFilter;
 import org.htmlparser.Parser;
@@ -42,6 +43,7 @@ public class PageParser
     public Integer size = null;
     //We use this variable to count the total number of chars on the page if size is not included in the response header
     public int size_default = 0;
+    public Boolean urlIsValid = true;
 
     private final String LAST_MODIFIED = "Last-Modified";
     private final String DATE = "Date";
@@ -52,18 +54,21 @@ public class PageParser
         try {
             parser.setResource(url);
         } catch (ParserException e) {
-            e.printStackTrace();
+            urlIsValid = false;
+            //e.printStackTrace();
         }
-        ConnectionManager manager = Parser.getConnectionManager ();
-        connection = (HttpURLConnection) parser.getConnection();
-        try {
-            responseHeader = HttpHeader.getResponseHeader(connection).split("\n");
-        } catch (Exception e) {
-            e.printStackTrace();
-            responseHeader = new String[0];
+        if (urlIsValid) {
+            ConnectionManager manager = Parser.getConnectionManager();
+            connection = (HttpURLConnection) parser.getConnection();
+            try {
+                responseHeader = HttpHeader.getResponseHeader(connection).split("\n");
+            } catch (Exception e) {
+                e.printStackTrace();
+                responseHeader = new String[0];
+            }
+            this.lastModified = null;
+            extractResponseInfo();
         }
-        this.lastModified = null;
-        extractResponseInfo();
     };
 
 	public Vector<String> extractWords() throws ParserException
@@ -76,8 +81,10 @@ public class PageParser
         sb.setLinks (false);
 
         parser.visitAllNodesWith(sb);
-        StringTokenizer st = new StringTokenizer(sb.getStrings());
         Vector<String> vec = new Vector<String>();
+        String strings = sb.getStrings();
+        if (null == strings) return vec;
+        StringTokenizer st = new StringTokenizer(strings);
         while (st.hasMoreTokens()) {
             String element = st.nextToken();
         	vec.addElement(element);

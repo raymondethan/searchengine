@@ -97,6 +97,11 @@ public class Index {
         bodyInverseDocumentFrequencies.addDocument(wordId, docId);
     }
 
+    public void removeDocument(Integer docId) {
+        bodyIndex.remove(docId);
+        titleIndex.remove(docId);
+    }
+
     public void addWordToDocContent(int docId, String word) throws IOException {
         int wordId = wordIndex.getId(word);
         docContentIndex.addWord(docId, wordId);
@@ -261,12 +266,6 @@ public class Index {
             for (int i = 0; i < Math.min(MAX_TERMS_PRINTED, list.size()); ++i) {
                 wordCounts += list.get(i).toString().replace("="," ") + "; ";
             }
-
-            //Print parent links and then child links
-//            List<String> parentLinksList = linkIndex.getParents(url);
-//            String parentLinks = parentLinksList
-//                    .stream()
-//                    .collect(Collectors.joining("\n"));
 
             List<String> childLinksList = linkIndex.getChildren(url);
             String childLinks = childLinksList

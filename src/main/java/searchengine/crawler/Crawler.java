@@ -47,9 +47,6 @@ public class Crawler {
     public void begin() throws IOException, ParseException {
         System.out.print("Crawling");
 
-        //Store the last modified section of the response as a Date so we can easily make date comparisons
-        DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy kk:mm:ss zzz");
-
         while (frontier.size() > 0 && visited.size() < maxLinks) {
             //Print to console to indicate crawling of pages
             System.out.print(".");
@@ -57,6 +54,10 @@ public class Crawler {
             if (visited.contains(current)) continue;
 
             PageParser pageParser = new PageParser(current);
+            if (!pageParser.urlIsValid) {
+                System.out.println("page parser invalid url---------------------------");
+                continue;
+            }
             Date lastModified = pageParser.lastModified;
             Integer size = pageParser.size;
 
@@ -66,16 +67,22 @@ public class Crawler {
             //If the doc exists in our index, and the webpage retrieved does not have a last modified field
             //Or the webpage's last modified field is after the last modification date of the document in the index
             //Then we do not want to add the page to the index and visit its children
-            if (null != currDocId && null != pageInIndex && (null == lastModified || !pageInIndex.lastModified.after(lastModified))) continue;
+            if (null != currDocId && null != pageInIndex && (null == lastModified || !pageInIndex.lastModified.after(lastModified))) {
+                continue;
+            }
             //TODO: We are supposed to ignore urls if we have already visited them and the last modification date has not been updated
             //TODO: This means we do not add any urls to the frontier when we start from a root that has already been indexed - What should we do in this situation
+
+            if (null != currDocId) {
+                index.removeDocument(currDocId);
+            }
 
             visited.add(current);
 
             String title = "No Title";
             try {
                 title = pageParser.extractTitle();
-                String [] titleArray = title.split(" ");
+                String[] titleArray = title.split(" ");
                 for (int i = 0; i < titleArray.length; ++i) {
                     if (!stopStem.isStopWord(titleArray[i])) {
                         String stemmed = stopStem.stem(titleArray[i]);

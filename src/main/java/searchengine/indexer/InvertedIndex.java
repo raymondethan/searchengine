@@ -9,8 +9,12 @@ Email:
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Serializable;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import javafx.geometry.Pos;
 import jdbm.RecordManager;
 import jdbm.RecordManagerFactory;
 import jdbm.helper.FastIterator;
@@ -21,6 +25,10 @@ public class InvertedIndex
 {
 	private RecordManager recman;
 	private HTree hashtable;
+	private HTree tmpHashtable;
+	private final int maxInsertionsBeforeMerge = 75;
+	private int insertionsSinceLastMerge = 0;
+    private int lastDocIdInserted = -1;
 
 	public InvertedIndex(RecordManager recordmanager, String indexName) throws IOException
 	{
@@ -28,21 +36,41 @@ public class InvertedIndex
 
         //Create our inverted index
 		long recid = recman.getNamedObject(indexName);
-		if (recid != 0)
+		long tmpRecid = recman.getNamedObject("tmp"+indexName);
+		if (recid != 0) {
 			hashtable = HTree.load(recman, recid);
+		}
 		else
 		{
 			hashtable = HTree.createInstance(recman);
-			recman.setNamedObject(indexName, hashtable.getRecid() );
+			recman.setNamedObject(indexName, hashtable.getRecid());
+		}
+		if (tmpRecid != 0) {
+			tmpHashtable = HTree.load(recman, tmpRecid);
+		}
+		else {
+			tmpHashtable = HTree.createInstance(recman);
+			recman.setNamedObject("tmp"+indexName, tmpHashtable.getRecid());
 		}
 	}
 
 
 	public void addEntry(int wordId, int docId, int pos) throws IOException
 	{
+        if (docId != lastDocIdInserted) {
+            ++insertionsSinceLastMerge;
+            lastDocIdInserted = docId;
+        }
+
+        if (insertionsSinceLastMerge >= maxInsertionsBeforeMerge) {
+            merge(tmpHashtable,hashtable);
+            insertionsSinceLastMerge = 0;
+        }
+
 		// Add a "docX Y" entry for the key "word" into hashtable
 
-		List<Posting> entries = (List<Posting>) hashtable.get(wordId);
+		List<Posting> entries = (List<Posting>) tmpHashtable.get(wordId);
+//		List<Posting> entries = (List<Posting>) hashtable.get(wordId);
 		if (entries == null) {
 			Posting entry = new Posting(docId, 1);
             entry.positions.add(pos);
@@ -67,11 +95,52 @@ public class InvertedIndex
 			}
 		}
 
-		hashtable.put(wordId, entries);
-
-		//Add docId to docIdIndex if it
+		tmpHashtable.put(wordId, entries);
+//		hashtable.put(wordId, entries);
 		
 	}
+
+    private void merge(HTree tmpHashtable, HTree hashtable) throws IOException {
+
+        LocalDateTime start = LocalDateTime.now();
+
+        FastIterator iter = tmpHashtable.keys();
+        Integer key;
+
+        while ((key = (Integer) iter.next()) != null) {
+            List<Posting> tmpPosting = (List<Posting>) tmpHashtable.get(key);
+            List<Posting> permanentPosting = (List<Posting>) hashtable.get(key);
+            if (permanentPosting == null) {
+                permanentPosting = new ArrayList<>();
+                permanentPosting.addAll(tmpPosting);
+            }
+            else {
+                permanentPosting.addAll(tmpPosting);
+            }
+            hashtable.put(key, permanentPosting);
+        }
+
+        clearHashTable(tmpHashtable, hashtable);
+
+        System.out.printf("Merging time: %s%n", Duration.between(start, LocalDateTime.now()));
+
+        //System.out.println("Merge occured in " + indexName);
+
+    }
+
+    private void clearHashTable(HTree tmpHastable, HTree permHashtable) throws IOException {
+        FastIterator iter = permHashtable.keys();
+        Integer key;
+
+        while ((key = (Integer) iter.next()) != null) {
+            tmpHastable.remove(key);
+        }
+    }
+
+    public void remove(Integer docId) throws IOException {
+        hashtable.remove(docId);
+        tmpHashtable.remove(docId);
+    }
 
     public ArrayList<Posting> getDocuments(int wordIndex) throws IOException {
         return (ArrayList<Posting>) hashtable.get(wordIndex);
