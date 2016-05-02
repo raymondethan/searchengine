@@ -32,13 +32,12 @@ public class Searcher {
 
         Stream<SearchResult> results = mergeResults(titleResults, bodyResults);
 
-        return results
-                .sorted((i1,i2) -> Double.compare(i1.getSimilarity(),i2.getSimilarity()))
-                .collect(Collectors.toList())
-                .subList(0, settings.maxSearchResults);
+        List<SearchResult> sorted_results = results
+                .sorted((i1,i2) -> Double.compare(i2.getSimilarity(),i1.getSimilarity()))
+                .collect(Collectors.toList());
+        return sorted_results.subList(0, Math.min(settings.maxSearchResults, sorted_results.size()));
     }
 
-    //TODO: "popular results" works but popular results does not
     //It got a lot slower for some queries, WHY????
     public List<SearchResult> getResults(Tokenizer tokenizer, IOExceptingFunction<String, Double> idfFetcher, IOExceptingFunction<String, List<Posting>> docFetcher) throws IOException {
         //Cache for word idfs

@@ -67,7 +67,9 @@ public class Program {
 
         System.out.println("Running page rank");
         PageRank pageRanker = new PageRank(index);
-        pageRanker.rankPages();
+        for (int i = 0; i < 40; ++i) {
+            pageRanker.rankPages();
+        }
         pageRanker.printPageRanks();
 
 //        PrintStream stream = new PrintStream(new FileOutputStream("spider_result.txt"));
@@ -75,7 +77,7 @@ public class Program {
 //        index.printAll();
 
         Searcher search = new Searcher(index);
-        List<SearchResult> result = search.search("popular results");
+        List<SearchResult> result = search.search("\"Episode Title Search for \"Dinosaur Planet\"\"");
         result.forEach(searchResult -> System.out.println(searchResult.getLink()));
         System.out.println("finished search");
     }
