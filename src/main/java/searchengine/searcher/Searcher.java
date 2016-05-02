@@ -35,6 +35,7 @@ public class Searcher {
         List<SearchResult> sorted_results = results
                 .sorted((i1,i2) -> Double.compare(i2.getSimilarity(),i1.getSimilarity()))
                 .collect(Collectors.toList());
+        //sorted_results.forEach(r -> System.out.println(r.getTitle() + ": " + r.getSimilarity()));
         return sorted_results.subList(0, Math.min(settings.maxSearchResults, sorted_results.size()));
     }
 
@@ -176,9 +177,12 @@ public class Searcher {
             DocumentVector vector = documentVectors.get(key);
             double similarity = vector.dot(queryVector);
 
+            double pageRank = index.getPageRank(key);
+            double rank = (settings.similarityWeight * similarity + settings.pageRankWeight * pageRank) / (settings.similarityWeight + settings.pageRankWeight);
+
             //Pass in first position for now
 
-            matched_documents.add(getSearchResult(key, similarity, docPositionMatches.get(key)));
+            matched_documents.add(getSearchResult(key, rank, docPositionMatches.get(key)));
         }
 
         return matched_documents;

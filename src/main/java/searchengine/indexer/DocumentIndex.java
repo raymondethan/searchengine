@@ -32,6 +32,10 @@ public class DocumentIndex<T,K> extends BasicPersistentMap<T,K> {
         return documentCount;
     }
 
+    public double getPageRank(T key) throws IOException {
+        return ((WebPage) get(key)).pagerank;
+    }
+
     public void updatePageRank(T key, float pagerank) throws IOException {
         WebPage doc = (WebPage) get(key);
         doc.pagerank = pagerank;

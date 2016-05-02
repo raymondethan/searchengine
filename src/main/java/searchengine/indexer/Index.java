@@ -197,6 +197,10 @@ public class Index {
         return linkIndex.getChildLinks(docId);
     }
 
+    public double getPageRank(Integer docId) throws IOException {
+        return docIdIndex.getPageRank(docId);
+    }
+
     public Map getWordCounts(int docId) throws IOException {
         return wordCountIndex.getWordCounts(docId);
     }
