@@ -67,7 +67,7 @@ public class Program {
 
         System.out.println("Running page rank");
         PageRank pageRanker = new PageRank(index);
-        for (int i = 0; i < 40; ++i) {
+        for (int i = 0; i < settings.pageRankIterations; ++i) {
             pageRanker.rankPages();
         }
         pageRanker.printPageRanks();

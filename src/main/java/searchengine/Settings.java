@@ -12,4 +12,5 @@ public class Settings {
     public int maxSearchResults = 50;
     public int similarityWeight = 90;
     public int pageRankWeight = 10;
+    public int pageRankIterations = 40;
 }
