@@ -224,6 +224,11 @@ public class Index {
              * Page url
              * Last modified data, Page size
              * Keyword1 freq1; ...; KeywordM fredM
+             * Parent Link 1
+             * .
+             * .
+             * .
+             * Parent Link m
              * Child Link 1
              * .
              * .
@@ -231,7 +236,7 @@ public class Index {
              * Child Link n
              * -------------------------------------------------------------------------------------------
              */
-            String outputFormatter = "%s\n%s\n%s, %s\n%s\n%s\n-------------------------------------------------------------------------------------------";
+            String outputFormatter = "%s\n%s\n%s, %s\n%s\n%s\n%s\n-------------------------------------------------------------------------------------------";
 
             //Assumes get returns a valid webpage
             WebPage currPage = (WebPage) docIdIndex.get(key);
@@ -267,12 +272,17 @@ public class Index {
                 wordCounts += list.get(i).toString().replace("="," ") + "; ";
             }
 
+            List<String> parentLinksList = linkIndex.getParents(url);
+            String parentLinks = parentLinksList
+                    .stream()
+                    .collect(Collectors.joining("\n"));
+
             List<String> childLinksList = linkIndex.getChildren(url);
             String childLinks = childLinksList
                     .stream()
                     .collect(Collectors.joining("\n"));
 
-            String result = String.format(outputFormatter, title, url, lastModified, size, wordCounts, childLinks);
+            String result = String.format(outputFormatter, title, url, lastModified, size, wordCounts, parentLinks, childLinks);
             stream.println(result);
         }
 

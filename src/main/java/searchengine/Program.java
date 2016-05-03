@@ -1,6 +1,8 @@
 package searchengine;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.text.ParseException;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -73,9 +75,9 @@ public class Program {
         }
         //pageRanker.printPageRanks();
 
-//        PrintStream stream = new PrintStream(new FileOutputStream("spider_result.txt"));
-//        index.printAll(stream);
-//        index.printAll();
+        PrintStream stream = new PrintStream(new FileOutputStream("spider_result.txt"));
+        index.printAll(stream);
+        index.printAll();
 
         Searcher search = new Searcher(index);
         List<SearchResult> result = search.search("dinosaur");
