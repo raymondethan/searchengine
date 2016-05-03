@@ -2,7 +2,9 @@ package searchengine.indexer;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import jdbm.RecordManager;
 import jdbm.htree.HTree;
 
@@ -48,9 +50,9 @@ public class LinkIndex extends BasicIndex<String> {
     public void addParent(Integer linkId, String parent) throws IOException {
         //int linkId = getId(link);
 
-        List<String> parents = (List<String>) parentHashTree.get(linkId);
+        Set<String> parents = (Set<String>) parentHashTree.get(linkId);
         if (parents == null)
-            parents = new ArrayList<>();
+            parents = new HashSet<>();
 
         //We don't store the parent links as a string because we don't gain
         //any advantage searching by doing so and it would add overhead to getting a list
@@ -74,13 +76,13 @@ public class LinkIndex extends BasicIndex<String> {
     }
 
     public List<String> getParents(Integer linkId) throws IOException {
-        List<String> result = (List<String>) parentHashTree.get(linkId);
-        return result == null ? new ArrayList<>() : result;
+        Set<String> result = (Set<String>) parentHashTree.get(linkId);
+        return new ArrayList<>(result == null ? new HashSet<>() : result);
     }
 
     public List<String> getChildLinks(Integer linkId) throws IOException {
-        List<String> result = (List<String>) childHashTree.get(linkId);
-        return result == null ? new ArrayList<>() : result;
+        Set<String> result = (Set<String>) childHashTree.get(linkId);
+        return new ArrayList<>(result == null ? new HashSet<>() : result);
     }
 
     /**
@@ -91,15 +93,14 @@ public class LinkIndex extends BasicIndex<String> {
     public void addChildren(Integer linkId, List<String> children) throws IOException {
         //int linkId = getId(link);
 
-        List<String> currentChildren = (List<String>) childHashTree.get(linkId);
+        Set<String> currentChildren = (Set<String>) childHashTree.get(linkId);
         if (currentChildren == null)
-            currentChildren = new ArrayList<>();
+            currentChildren = new HashSet<>();
 
         children.stream()
-                .filter(c -> !children.contains(c))
                 .forEach(currentChildren::add);
 
-        childHashTree.put(linkId, children);
+        childHashTree.put(linkId, currentChildren);
     }
 
     /**
@@ -121,11 +122,11 @@ public class LinkIndex extends BasicIndex<String> {
      */
     public List<String> getChildren(String link) throws IOException {
         int linkId = getId(link);
-        List<String> result = (List<String>) childHashTree.get(linkId);
-        return result == null ? new ArrayList<>() : result;
+        Set<String> result = (Set<String>) childHashTree.get(linkId);
+        return new ArrayList<>(result == null ? new HashSet<>() : result);
     }
 
     public int getNumChildren(int docId) throws IOException {
-        return ((List<String>) childHashTree.get(docId)).size();
+        return ((HashSet<String>) childHashTree.get(docId)).size();
     }
 }
