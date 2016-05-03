@@ -28,20 +28,6 @@ public class Crawler {
     private LinkedList<String> frontier = new LinkedList<>();
     private StopStem stopStem = new StopStem("stopwords.txt");
 
-    private long totalDuration = 0;
-    private long maxConnection = -1;
-    private long minConnection = 100000;
-    private long totalDurationT = 0;
-    private long maxConnectionT = -1;
-    private long minConnectionT = 100000;
-    private long totalDurationW = 0;
-    private long maxConnectionW = -1;
-    private long minConnectionW = 100000;
-    private long totalDurationL = 0;
-    private long maxConnectionL = -1;
-    private long minConnectionL = 100000;
-    Boolean debug = true;
-
     public Crawler(String startingUrl, int maxLinks) {
         this.maxLinks = maxLinks;
 
@@ -69,16 +55,7 @@ public class Crawler {
             String current = frontier.removeFirst();
             if (visited.contains(current)) continue;
 
-            LocalDateTime start = LocalDateTime.now();
             PageParser pageParser = new PageParser(current);
-            long d = Duration.between(start, LocalDateTime.now()).getSeconds();
-            totalDuration += d;
-            if (d < minConnection) {
-                minConnection = d;
-            }
-            else if (d > maxConnection) {
-                maxConnection = d;
-            }
 
             Date lastModified = pageParser.lastModified;
             Integer size = pageParser.size;
@@ -92,8 +69,6 @@ public class Crawler {
             if (null != pageInIndex && (null == lastModified || !pageInIndex.lastModified.after(lastModified))) {
                 continue;
             }
-            //TODO: We are supposed to ignore urls if we have already visited them and the last modification date has not been updated
-            //TODO: This means we do not add any urls to the frontier when we start from a root that has already been indexed - What should we do in this situation
 
             if (null != pageInIndex) {
                 index.removeDocument(currDocId);
@@ -101,7 +76,6 @@ public class Crawler {
 
             visited.add(current);
 
-            LocalDateTime startT = LocalDateTime.now();
             String title = "No Title";
             try {
                 title = pageParser.extractTitle();
@@ -119,16 +93,7 @@ public class Crawler {
             } catch (ParserException e) {
                 e.printStackTrace();
             }
-            long dT = Duration.between(startT, LocalDateTime.now()).getSeconds();
-            totalDurationT += dT;
-            if (dT < minConnectionT) {
-                minConnectionT = dT;
-            }
-            else if (dT > maxConnectionT) {
-                maxConnectionT = dT;
-            }
 
-            LocalDateTime startW = LocalDateTime.now();
             Vector<String> words = null;
             try {
                 //Get the words from the page
@@ -152,17 +117,7 @@ public class Crawler {
                 }
                 index.addWordToDocContent(currDocId, words.get(i));
             }
-            long dW = Duration.between(startW, LocalDateTime.now()).getSeconds();
-            totalDurationW += dW;
-            if (dW < minConnectionW) {
-                minConnectionW = dW;
-            }
-            else if (dW > maxConnectionW) {
-                maxConnectionW = dW;
-            }
 
-
-            LocalDateTime startL = LocalDateTime.now();
             try {
                 //Add all the links to the frontier that we haven't seen already
                 Vector<String> links = pageParser.extractLinks();
@@ -191,39 +146,9 @@ public class Crawler {
                 e.printStackTrace();
                 continue;
             }
-            long dL = Duration.between(startL, LocalDateTime.now()).getSeconds();
-            totalDurationL += dL;
-            if (dL < minConnectionL) {
-                minConnectionL = dL;
-            }
-            else if (dL > maxConnectionL) {
-                maxConnectionL = dL;
-            }
 
         }
         System.out.println();
-
-        if (debug) {
-            System.out.println("Total seconds spent connection: " + totalDuration);
-            System.out.println("Average seconds spent connection: " + totalDuration / maxLinks);
-            System.out.println("max connection time: " + maxConnection);
-            System.out.println("min connection time: " + minConnection);
-
-            System.out.println("Total seconds spent connection: " + totalDurationT);
-            System.out.println("Average seconds spent connection: " + totalDurationT / maxLinks);
-            System.out.println("max connection time: " + maxConnectionT);
-            System.out.println("min connection time: " + minConnectionT);
-
-            System.out.println("Total seconds spent connection: " + totalDurationW);
-            System.out.println("Average seconds spent connection: " + totalDurationW / maxLinks);
-            System.out.println("max connection time: " + maxConnectionW);
-            System.out.println("min connection time: " + minConnectionW);
-
-            System.out.println("Total seconds spent connection: " + totalDurationL);
-            System.out.println("Average seconds spent connection: " + totalDurationL / maxLinks);
-            System.out.println("max connection time: " + maxConnectionL);
-            System.out.println("min connection time: " + minConnectionL);
-        }
 
         index.finalize();
     }
