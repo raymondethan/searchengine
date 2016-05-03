@@ -6,7 +6,6 @@ import java.util.List;
  * A class containing pertinent information about a search result
  */
 public class SearchResult {
-    private float pageRank;
     private double similarity;
 
     private Integer id;
@@ -63,14 +62,6 @@ public class SearchResult {
 
     public void setSimilarity(double similarity) {
         this.similarity = similarity;
-    }
-
-    public float getPageRank() {
-        return pageRank;
-    }
-
-    public void setPageRank(float pageRank) {
-        this.pageRank = pageRank;
     }
 
     public Integer getId() {
