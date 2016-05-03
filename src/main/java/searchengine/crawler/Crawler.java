@@ -1,9 +1,7 @@
 package searchengine.crawler;
 
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -112,6 +110,9 @@ public class Crawler {
 
             //todo: convert the words to lower case?????
             for (int i = 0; i < words.size(); ++i) {
+                //Make sure the word is lower case before we try to do anything with it.
+                words.set(i, words.get(i).toLowerCase());
+
                 if (!stopStem.isStopWord(words.get(i))) {
                     String stemmed = stopStem.stem(words.get(i));
 

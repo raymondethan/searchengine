@@ -25,6 +25,9 @@ public class Searcher {
     }
 
     public List<SearchResult> search(String query) throws IOException {
+        //Convert the query to lower case before we do anything with it
+        query = query.toLowerCase();
+
         Tokenizer tokenizer = new Tokenizer(query);
 
         List<SearchResult> bodyResults = getResults(tokenizer, index::idf, index::getDoc);
