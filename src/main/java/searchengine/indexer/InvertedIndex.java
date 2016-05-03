@@ -57,20 +57,20 @@ public class InvertedIndex
 
 	public void addEntry(int wordId, int docId, int pos) throws IOException
 	{
-//        if (docId != lastDocIdInserted) {
-//            ++insertionsSinceLastMerge;
-//            lastDocIdInserted = docId;
-//        }
-//
-//        if (insertionsSinceLastMerge >= maxInsertionsBeforeMerge) {
-//            merge(tmpHashtable,hashtable);
-//            insertionsSinceLastMerge = 0;
-//        }
+        if (docId != lastDocIdInserted) {
+            ++insertionsSinceLastMerge;
+            lastDocIdInserted = docId;
+        }
+
+        if (insertionsSinceLastMerge >= maxInsertionsBeforeMerge) {
+            merge(tmpHashtable,hashtable);
+            insertionsSinceLastMerge = 0;
+        }
 
 		// Add a "docX Y" entry for the key "word" into hashtable
 
-//		List<Posting> entries = (List<Posting>) tmpHashtable.get(wordId);
-		List<Posting> entries = (List<Posting>) hashtable.get(wordId);
+		List<Posting> entries = (List<Posting>) tmpHashtable.get(wordId);
+//		List<Posting> entries = (List<Posting>) hashtable.get(wordId);
 		if (entries == null) {
 			Posting entry = new Posting(docId, 1);
             entry.positions.add(pos);
@@ -95,8 +95,8 @@ public class InvertedIndex
 			}
 		}
 
-//		tmpHashtable.put(wordId, entries);
-		hashtable.put(wordId, entries);
+		tmpHashtable.put(wordId, entries);
+//		hashtable.put(wordId, entries);
 		
 	}
 
