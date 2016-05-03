@@ -63,6 +63,10 @@ public class LinkIndex extends BasicIndex<String> {
         parentHashTree.put(linkId, parents);
     }
 
+    public void removeChildLinksFromDoc(Integer docId) throws IOException {
+        childHashTree.remove(docId);
+    }
+
     /**
      * Gets a list of parents for a link
      * @param link The link to get parents for
@@ -71,8 +75,6 @@ public class LinkIndex extends BasicIndex<String> {
     public List<String> getParents(String link) throws IOException {
         int linkId = getId(link);
         return getParents(linkId);
-//        List<String> result = (List<String>) parentHashTree.get(linkId);
-//        return result == null ? new ArrayList<>() : result;
     }
 
     public List<String> getParents(Integer linkId) throws IOException {

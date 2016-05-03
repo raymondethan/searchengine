@@ -14,10 +14,11 @@ import java.util.List;
 import jdbm.RecordManager;
 import jdbm.helper.FastIterator;
 import jdbm.htree.HTree;
+import searchengine.Settings;
 
 public class InvertedIndex
 {
-	private final int maxInsertionsBeforeMerge = 75;
+	private final int maxInsertionsBeforeMerge;
 	private RecordManager recman;
 	private HTree hashtable;
 	private HTree tmpHashtable;
@@ -27,6 +28,8 @@ public class InvertedIndex
 	public InvertedIndex(RecordManager recordmanager, String indexName) throws IOException
 	{
 		this.recman = recordmanager;
+        Settings settings = new Settings();
+        maxInsertionsBeforeMerge = settings.maxInsertionsBeforeMerge;
 
         //Create our inverted index
 		long recid = recman.getNamedObject(indexName);
@@ -136,8 +139,24 @@ public class InvertedIndex
     }
 
     public void remove(Integer docId) throws IOException {
-//        hashtable.remove(docId);
-//        tmpHashtable.remove(docId);
+        removeDocFromHashtable(docId,tmpHashtable);
+        removeDocFromHashtable(docId,hashtable);
+	}
+
+    private void removeDocFromHashtable(Integer docId, HTree hastable) throws IOException {
+        FastIterator iter = hastable.keys();
+        Integer key;
+
+        while ((key = (Integer) iter.next()) != null) {
+            List<Posting> entries = (List<Posting>) hastable.get(key);
+            for (int i = 0; i < entries.size(); ++i) {
+                Posting element = entries.get(i);
+                if (element.doc == docId) {
+                    entries.remove(i);
+                    break;
+                }
+            }
+        }
     }
 
     public ArrayList<Posting> getDocuments(int wordIndex) throws IOException {

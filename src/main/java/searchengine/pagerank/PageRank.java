@@ -13,7 +13,7 @@ import searchengine.Settings;
  */
 public class PageRank {
 
-    private static final float DAMPING_FACTOR = (float) .85;
+    private final float DAMPING_FACTOR;
     private Index index;
     private Set<Integer> visited = new HashSet<>();
     private LinkedList<Integer> frontier = new LinkedList<>();
@@ -22,6 +22,7 @@ public class PageRank {
         this.index=index;
         Settings settings = new Settings();
         frontier.add(index.getDocId(settings.startUrl));
+        DAMPING_FACTOR = settings.damping_factor;
     }
 
 

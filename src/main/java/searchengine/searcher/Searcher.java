@@ -90,7 +90,6 @@ public class Searcher {
                     boolean found_valid_position_difference = true;
                     boolean doc_missing_from_other_posting_list = false;
                     int j = 0;
-                    int position_of_match = 0;
                     while (found_valid_position_difference && !doc_missing_from_other_posting_list && j < postings.size()) {
                         String word = tokens.get(i).getWords().get(j);
                         Posting doc_in_other_posting = postings.get(j).get(doc_match.doc);
@@ -104,7 +103,7 @@ public class Searcher {
                                 documentVectors.put(doc_match.doc, vector);
                             }
 
-                            documentVectors.get(doc_match.doc).getTfIdfs().set(tokenizer.getTokens().get(i).getFirstWordIndex() + j, tfIdf);
+                            documentVectors.get(doc_match.doc).getTfIdfs().set(tokenizer.getTokens().get(i).getPositions().get(0) + j, tfIdf);
                         }
 
                         //make sure we don't compare against the smallest posting list because thats what we're iterating over
@@ -171,7 +170,7 @@ public class Searcher {
                         docPositionMatches.put(docId, positions.get(0));
                     }
 
-                    documentVectors.get(docId).getTfIdfs().set(tokenizer.getTokens().get(i).getFirstWordIndex(), tfIdf);
+                    documentVectors.get(docId).getTfIdfs().set(tokenizer.getTokens().get(i).getPositions().get(0), tfIdf);
                 }
             }
         }
@@ -270,8 +269,4 @@ public class Searcher {
         }
         return description;
     }
-
-//    public Stream<SearchResult> addDescriptions(Stream<SearchResult> results) {
-//        results.forEach(searchResult -> searchResult.setDescription());
-//    }
 }

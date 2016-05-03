@@ -98,6 +98,9 @@ public class Index {
     }
 
     public void removeDocument(Integer docId) throws IOException {
+        linkIndex.removeChildLinksFromDoc(docId);
+        docIdIndex.remove(docId);
+        docContentIndex.remove(docId);
         bodyIndex.remove(docId);
         titleIndex.remove(docId);
     }

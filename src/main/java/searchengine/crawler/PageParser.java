@@ -14,6 +14,8 @@ import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import com.sun.org.apache.xpath.internal.operations.Bool;
@@ -48,7 +50,9 @@ public class PageParser
 	PageParser(String _url) throws ParseException {
         this.url = _url;
         try {
+            //LocalDateTime start = LocalDateTime.now();
             parser.setResource(url);
+            //Duration.between(start, LocalDateTime.now());
         } catch (ParserException e) {
             urlIsValid = false;
             //e.printStackTrace();

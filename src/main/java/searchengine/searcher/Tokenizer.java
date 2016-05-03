@@ -13,7 +13,7 @@ public class Tokenizer {
     private StopStem stopStem = new StopStem("stopwords.txt");
 
     private String query;
-    private List<String> allwords = new ArrayList<>();
+//    private List<String> allwords = new ArrayList<>();
     private List<Token> tokens = new ArrayList<>();
 
     private StringBuilder currentWord = new StringBuilder();
@@ -69,10 +69,9 @@ public class Tokenizer {
             return;
         }
 
-        ++query_word_index;
-
         if (stopStem.isStopWord(word)) {
             currentWord = new StringBuilder();
+            ++query_word_index;
             return;
         }
 
@@ -80,6 +79,7 @@ public class Tokenizer {
 
         //Add the current word to the token
         currentToken.addWord(word, query_word_index);
+        ++query_word_index;
         currentWord = new StringBuilder();
 
         //If we're not in a phrase, end the token
@@ -92,8 +92,8 @@ public class Tokenizer {
         //Don't add tokens with no words
         if (currentToken.getWords().size() == 0) return;
 
-        currentToken.setFirstWordIndex(allwords.size());
-        allwords.addAll(currentToken.getWords());
+//        currentToken.setFirstWordIndex(allwords.size());
+//        allwords.addAll(currentToken.getWords());
 
         tokens.add(currentToken);
 

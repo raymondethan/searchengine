@@ -75,12 +75,12 @@ public class Program {
         }
         //pageRanker.printPageRanks();
 
-        PrintStream stream = new PrintStream(new FileOutputStream("spider_result.txt"));
-        index.printAll(stream);
-        index.printAll();
+//        PrintStream stream = new PrintStream(new FileOutputStream("spider_result.txt"));
+//        index.printAll(stream);
+//        index.printAll();
 
         Searcher search = new Searcher(index);
-        List<SearchResult> result = search.search("dinosaur");
+        List<SearchResult> result = search.search("hkust");
         result.forEach(searchResult -> System.out.println(searchResult.getLink()));
         System.out.println("finished search");
     }
