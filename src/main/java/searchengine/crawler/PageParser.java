@@ -39,15 +39,11 @@ public class PageParser
     private Parser parser = new Parser();
     private HttpURLConnection connection;
     private String[] responseHeader;
-    public Date lastModified;
+    public Date lastModified = null;
     public Integer size = null;
     //We use this variable to count the total number of chars on the page if size is not included in the response header
     public int size_default = 0;
     public Boolean urlIsValid = true;
-
-    private final String LAST_MODIFIED = "Last-Modified";
-    private final String DATE = "Date";
-    private final String CONTENT_LENGTH = "Content-Length";
 
 	PageParser(String _url) throws ParseException {
         this.url = _url;
@@ -66,7 +62,7 @@ public class PageParser
                 e.printStackTrace();
                 responseHeader = new String[0];
             }
-            this.lastModified = null;
+            //this.lastModified = null;
             extractResponseInfo();
         }
     };
