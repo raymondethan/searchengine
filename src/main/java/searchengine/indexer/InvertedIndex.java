@@ -7,26 +7,20 @@ Email:
 */
 
 import java.io.IOException;
-import java.io.PrintStream;
-import java.io.Serializable;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import javafx.geometry.Pos;
+import java.util.ArrayList;
+import java.util.List;
 import jdbm.RecordManager;
-import jdbm.RecordManagerFactory;
 import jdbm.helper.FastIterator;
 import jdbm.htree.HTree;
-import searchengine.crawler.WebPage;
 
 public class InvertedIndex
 {
+	private final int maxInsertionsBeforeMerge = 75;
 	private RecordManager recman;
 	private HTree hashtable;
 	private HTree tmpHashtable;
-	private final int maxInsertionsBeforeMerge = 75;
 	private int insertionsSinceLastMerge = 0;
     private int lastDocIdInserted = -1;
 
@@ -161,5 +155,10 @@ public class InvertedIndex
 		// Delete the word and its list from the hashtable
 		hashtable.remove(wordId);
 	
+	}
+
+	public void finalize() throws IOException {
+		merge(tmpHashtable, hashtable);
+		insertionsSinceLastMerge = 0;
 	}
 }

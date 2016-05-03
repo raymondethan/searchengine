@@ -284,6 +284,9 @@ public class Index {
 
     public void finalize() throws IOException
     {
+        bodyIndex.finalize();
+        titleIndex.finalize();
+
         recman.commit();
         recman.close();
     }
