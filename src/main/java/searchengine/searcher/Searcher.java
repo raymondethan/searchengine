@@ -103,7 +103,7 @@ public class Searcher {
                                 documentVectors.put(doc_match.doc, vector);
                             }
 
-                            documentVectors.get(doc_match.doc).getTfIdfs().set(tokenizer.getTokens().get(i).getPositions().get(0) + j, tfIdf);
+                            documentVectors.get(doc_match.doc).getTfIdfs().set(i + j, tfIdf);
                         }
 
                         //make sure we don't compare against the smallest posting list because thats what we're iterating over
@@ -170,7 +170,7 @@ public class Searcher {
                         docPositionMatches.put(docId, positions.get(0));
                     }
 
-                    documentVectors.get(docId).getTfIdfs().set(tokenizer.getTokens().get(i).getPositions().get(0), tfIdf);
+                    documentVectors.get(docId).getTfIdfs().set(i, tfIdf);
                 }
             }
         }
