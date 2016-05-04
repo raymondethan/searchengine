@@ -6,14 +6,10 @@ import java.io.PrintStream;
 import java.text.ParseException;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.List;
 import searchengine.crawler.Crawler;
-import searchengine.crawler.StopStem;
 import searchengine.helpers.ArgumentsManager;
 import searchengine.indexer.Index;
 import searchengine.pagerank.PageRank;
-import searchengine.searcher.SearchResult;
-import searchengine.searcher.Searcher;
 import searchengine.site.Server;
 
 /**
@@ -77,13 +73,5 @@ public class Program {
 
         PrintStream stream = new PrintStream(new FileOutputStream("spider_result.txt"));
         index.printAll(stream);
-
-        Searcher search = new Searcher(index);
-        List<SearchResult> result = search.search("fun");
-        result.forEach(searchResult -> System.out.println(searchResult.getLink()));
-        System.out.println("finished search");
-
-        StopStem stopStem = new StopStem("stopwords.txt");
-        System.out.println(stopStem.isStopWord("fun"));
     }
 }
