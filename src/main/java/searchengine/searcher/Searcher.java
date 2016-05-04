@@ -180,7 +180,7 @@ public class Searcher {
             double similarity = vector.dot(queryVector);
 
             double pageRank = index.getPageRank(key);
-            double rank = (settings.similarityWeight * similarity + settings.pageRankWeight * pageRank) / (settings.similarityWeight + settings.pageRankWeight);
+            double rank = (settings.alpha * similarity + (1 - settings.alpha) * pageRank);
 
             //Pass in first position for now
 

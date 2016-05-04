@@ -11,8 +11,7 @@ public class Settings {
     public String startUrl = "http://www.cse.ust.hk/~ericzhao/COMP4321/TestPages/testpage.htm";
     public int maxTermsPrinted = 5;
     public int maxSearchResults = 75;
-    public int similarityWeight = 90;
-    public int pageRankWeight = 10;
+    public double alpha = .9;
     public int pageRankIterations = 40;
     public final float damping_factor = (float) .85;
 }
