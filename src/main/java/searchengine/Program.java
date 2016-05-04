@@ -8,6 +8,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import searchengine.crawler.Crawler;
+import searchengine.crawler.StopStem;
 import searchengine.helpers.ArgumentsManager;
 import searchengine.indexer.Index;
 import searchengine.pagerank.PageRank;
@@ -78,8 +79,11 @@ public class Program {
         index.printAll(stream);
 
         Searcher search = new Searcher(index);
-        List<SearchResult> result = search.search("hkust");
+        List<SearchResult> result = search.search("fun");
         result.forEach(searchResult -> System.out.println(searchResult.getLink()));
         System.out.println("finished search");
+
+        StopStem stopStem = new StopStem("stopwords.txt");
+        System.out.println(stopStem.isStopWord("fun"));
     }
 }
