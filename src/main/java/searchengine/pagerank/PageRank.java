@@ -25,8 +25,6 @@ public class PageRank {
         DAMPING_FACTOR = settings.damping_factor;
     }
 
-
-    //TODO: doesn't work if the first page doesn't have any parents
     public void rankPages() throws IOException {
         while (frontier.size() > 0 && visited.size() < index.getDocumentCount()) {
             Integer current = frontier.removeFirst();

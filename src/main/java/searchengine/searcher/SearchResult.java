@@ -71,4 +71,28 @@ public class SearchResult {
     public String getLastModified() { return lastModified; }
 
     public int getSize() { return size; }
+
+    public String getTopWordCounts() {
+        return topWordCounts;
+    }
+
+    public void setTopWordCounts(String topWordCounts) {
+        this.topWordCounts = topWordCounts;
+    }
+
+    public List<String> getParentLinks() {
+        return parentLinks;
+    }
+
+    public void setParentLinks(List<String> parentLinks) {
+        this.parentLinks = parentLinks;
+    }
+
+    public List<String> getChildLinks() {
+        return childLinks;
+    }
+
+    public void setChildLinks(List<String> childLinks) {
+        this.childLinks = childLinks;
+    }
 }

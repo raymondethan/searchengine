@@ -73,11 +73,9 @@ public class Program {
         for (int i = 0; i < maxIterations; ++i) {
             pageRanker.rankPages();
         }
-        //pageRanker.printPageRanks();
 
-//        PrintStream stream = new PrintStream(new FileOutputStream("spider_result.txt"));
-//        index.printAll(stream);
-//        index.printAll();
+        PrintStream stream = new PrintStream(new FileOutputStream("spider_result.txt"));
+        index.printAll(stream);
 
         Searcher search = new Searcher(index);
         List<SearchResult> result = search.search("hkust");

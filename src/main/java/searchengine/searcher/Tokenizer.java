@@ -13,7 +13,6 @@ public class Tokenizer {
     private StopStem stopStem = new StopStem("stopwords.txt");
 
     private String query;
-//    private List<String> allwords = new ArrayList<>();
     private List<Token> tokens = new ArrayList<>();
 
     private StringBuilder currentWord = new StringBuilder();
@@ -91,9 +90,6 @@ public class Tokenizer {
     private void endToken() {
         //Don't add tokens with no words
         if (currentToken.getWords().size() == 0) return;
-
-//        currentToken.setFirstWordIndex(allwords.size());
-//        allwords.addAll(currentToken.getWords());
 
         tokens.add(currentToken);
 

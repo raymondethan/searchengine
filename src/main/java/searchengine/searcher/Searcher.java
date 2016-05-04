@@ -182,7 +182,7 @@ public class Searcher {
             double pageRank = index.getPageRank(key);
             double rank = (settings.alpha * similarity + (1 - settings.alpha) * pageRank);
 
-            //Pass in first position for now
+            //Pass in first position
 
             matched_documents.add(getSearchResult(key, rank, docPositionMatches.get(key)));
         }
@@ -203,7 +203,6 @@ public class Searcher {
         //Possible for links we haven't scraped but have assigned an id to
         if (wordCountMap == null) return "";
 
-        //Print out the top 5 most frequent terms
         String wordCounts = "";
         Set<Map.Entry<String, Integer>> set = wordCountMap.entrySet();
         List<Map.Entry<String, Integer>> list = new ArrayList<Map.Entry<String, Integer>>(

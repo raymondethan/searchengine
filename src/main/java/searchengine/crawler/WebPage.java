@@ -14,9 +14,6 @@ public class WebPage implements java.io.Serializable {
     public String title;
     public double pagerank;
 
-    //Added this to avoid an InvalidClassException
-    // private static final long serialVersionUID = 6529685098267757690L;
-
     public WebPage(int docId, String url, Date lastModified, Integer size, String title) {
         this.docId = docId;
         this.url = url;

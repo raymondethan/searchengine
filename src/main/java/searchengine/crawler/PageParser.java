@@ -50,9 +50,7 @@ public class PageParser
 	PageParser(String _url) throws ParseException {
         this.url = _url;
         try {
-            //LocalDateTime start = LocalDateTime.now();
             parser.setResource(url);
-            //Duration.between(start, LocalDateTime.now());
         } catch (ParserException e) {
             urlIsValid = false;
             //e.printStackTrace();
@@ -66,7 +64,6 @@ public class PageParser
                 e.printStackTrace();
                 responseHeader = new String[0];
             }
-            //this.lastModified = null;
             extractResponseInfo();
         }
     };

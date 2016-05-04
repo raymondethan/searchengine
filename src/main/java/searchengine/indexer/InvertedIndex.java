@@ -7,8 +7,6 @@ Email:
 */
 
 import java.io.IOException;
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import jdbm.RecordManager;
@@ -64,10 +62,7 @@ public class InvertedIndex
             insertionsSinceLastMerge = 0;
         }
 
-		// Add a "docX Y" entry for the key "word" into hashtable
-
 		List<Posting> entries = (List<Posting>) tmpHashtable.get(wordId);
-//		List<Posting> entries = (List<Posting>) hashtable.get(wordId);
 		if (entries == null) {
 			Posting entry = new Posting(docId, 1);
             entry.positions.add(pos);
@@ -93,13 +88,10 @@ public class InvertedIndex
 		}
 
 		tmpHashtable.put(wordId, entries);
-//		hashtable.put(wordId, entries);
 		
 	}
 
     private void merge(HTree tmpHashtable, HTree hashtable) throws IOException {
-
-        LocalDateTime start = LocalDateTime.now();
 
         FastIterator iter = tmpHashtable.keys();
         Integer key;
@@ -118,10 +110,6 @@ public class InvertedIndex
         }
 
         clearHashTable(tmpHashtable, hashtable);
-
-        System.out.printf("Merging time: %s%n", Duration.between(start, LocalDateTime.now()));
-
-        //System.out.println("Merge occured in " + indexName);
 
     }
 
