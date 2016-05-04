@@ -104,6 +104,9 @@ public class Crawler {
             }
 
             for (int i = 0; i < words.size(); ++i) {
+
+                index.addWordToDocContent(currDocId, words.get(i));
+
                 //Make sure the word is lower case before we try to do anything with it.
                 words.set(i, words.get(i).toLowerCase());
 
@@ -111,11 +114,11 @@ public class Crawler {
                     String stemmed = stopStem.stem(words.get(i));
 
                     //Stop getting those empty entries
-                    if (stemmed.isEmpty()) {index.addWordToDocContent(currDocId, words.get(i)); continue;}
+                    if (stemmed.isEmpty()) continue;
 
                     index.addEntry(stemmed, current, i);
                 }
-                index.addWordToDocContent(currDocId, words.get(i));
+
             }
 
             try {
