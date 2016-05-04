@@ -157,7 +157,7 @@ public class Index {
         int contain = bodyInverseDocumentFrequencies.containingDocuments(wordId);
         if (contain == 0) return 0;
 
-        return Math.log(docIdIndex.getDocumentCount()/contain);
+        return Math.log(docIdIndex.getDocumentCount()/(float)contain)/Math.log(2);
     }
 
     public double titleIdf(String word) throws IOException {
@@ -170,7 +170,7 @@ public class Index {
         int contain = titleInverseDocumentFrequencies.containingDocuments(wordId);
         if (contain == 0) return 0;
 
-        return Math.log(docIdIndex.getDocumentCount()/contain);
+        return Math.log(docIdIndex.getDocumentCount()/(float)contain)/Math.log(2);
     }
 
     public int getDocumentCount() {
